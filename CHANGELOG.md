@@ -3,7 +3,7 @@
 Formato: una sección por versión (`## x.y.z — AAAA-MM-DD`, o `— sin publicar`
 mientras se desarrolla). Flujo completo en [docs/FLUJO.md](docs/FLUJO.md).
 
-## 1.0.0 — sin publicar
+## 1.0.0 — 2026-10-14
 
 Primera versión publicada de AstrOS: insignias de asistencia estilo POAP en
 Stellar testnet.
