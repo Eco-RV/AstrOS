@@ -152,10 +152,17 @@ app/src/pages/            Events (/), EventDetail (/evento/:id), MyBadges (/insi
 app/src/attendance/       hooks del contrato, formulario de evento, arte de las insignias
 app/src/cavos/            inicio de sesión con Cavos (@cavos/kit 0.4.2)
 app/src/providers/        WalletProvider: un único useWallet() para Cavos y extensiones
-environments.toml         qué contratos se despliegan en cada entorno
+environments.toml         contratos por entorno (development local, staging, production)
+Versionamiento/           cambios a los contratos desplegados, por versión
+scripts/ci-clients.mjs    genera los clientes TS para Vercel y CI (sin Rust)
+vercel.json               despliegue en Vercel
 app/.env                  configuración pública (no se sube a git)
 .agents/skills/           guías para agentes de código (Claude Code, Codex, Cursor…)
 ```
+
+## Flujo de trabajo
+
+`feature/x.y.z` → PR a `dev_main` (staging, Preview de Vercel) → PR a `main` (producción) → etiqueta `vx.y.z` + release. Cada entorno tiene sus propios contratos en testnet; los cambios a contratos ya desplegados se hacen con `upgrade` y se documentan en `Versionamiento/`. Detalle completo en [docs/FLUJO.md](docs/FLUJO.md); historial en [CHANGELOG.md](CHANGELOG.md).
 
 ## Problemas comunes en Windows
 

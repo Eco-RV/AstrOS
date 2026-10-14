@@ -50,31 +50,36 @@ nft_enumerable_example = { client = false }
 # set_fee --fee 100
 # """
 
-### Staging: same network (testnet) but meant for a shared, stable deployment.
+### Staging (AstrOS): fixed contracts on TESTNET used by `dev_main` and the
+### Vercel Previews. Deployed once by `astros-admin` (app/.config/stellar, local
+### only) and updated with `upgrade`, never redeployed: a new deploy starts with
+### empty data. See docs/FLUJO.md and Versionamiento/.
 [staging.network]
 rpc-url = "https://soroban-testnet.stellar.org"
 network-passphrase = "Test SDF Network ; September 2015"
 
 [[staging.accounts]]
-name = "testnet-user"
+name = "astros-admin"
 default = true
 
 [staging.contracts]
-attendance = { client = true, constructor_args = "--admin testnet-user" }
-reputation = { client = true }
+attendance = { id = "CBYKEFCNBPQW3G2XABSKYBOGV4VAOS7QPXM3QEUXVH4T4CZECC72YSAU" }
+reputation = { id = "CAIDTMGHVR2NG33A32AGALDFCXQS4JKF5DVJNMOSSP2C4TGRJ55RYDUI" }
 fungible_allowlist_example = { client = false }
 nft_enumerable_example = { client = false }
 
-### Production: mainnet. Real money. Contracts are referenced by id, not deployed
-### automatically. See .agents/skills/scaffold-stellar/references/deploy.md
+### Production (AstrOS): fixed contracts used by `main` (Vercel Production).
+### For now ALSO on TESTNET (test money). Mainnet only when explicitly decided,
+### after the security checklist in the soroban-contracts skill
+### (.agents/skills/scaffold-stellar/references/deploy.md).
 [production.network]
-# Pick a mainnet RPC provider: https://developers.stellar.org/docs/data/apis/rpc/providers
-rpc-url = "https://YOUR-MAINNET-RPC-PROVIDER"
-network-passphrase = "Public Global Stellar Network ; September 2015"
+rpc-url = "https://soroban-testnet.stellar.org"
+network-passphrase = "Test SDF Network ; September 2015"
 
 [[production.accounts]]
-name = "official-team-account"
+name = "astros-admin"
 default = true
 
 [production.contracts]
-# reputation = { id = "C..." }
+attendance = { id = "CAJ4FV5EEP7SFCXLSCOLTVWL6F3ZM34SIDDNR6XGR7FQSTPNF3QIJCFD" }
+reputation = { id = "CDJDECLWXATHQ7CAYM2BDMRE2XJ4N6EV74MQHP3FMVCCILNI4DOUUNVW" }

@@ -79,6 +79,24 @@ verified, version-specific facts that differ from your training data.
     `npm audit fix --force`: it upgrades pinned SDKs (`@trustless-work/escrow`,
     `@cavos/kit`) and breaks the app.
 
+## AstrOS workflow (branches, environments, releases)
+
+Follow `docs/FLUJO.md`. In short:
+
+- Branches: `main` (production, PRs from `dev_main` only), `dev_main`
+  (integration), `feature/x.y.z` (from `dev_main`, PR back). Merge commits. Docs
+  and small fixes go straight to `dev_main`. Never commit to `main`.
+- Each environment has its own contracts on testnet (`environments.toml`):
+  `development` = local, redeployed freely; `staging` (`dev_main`, Vercel
+  Previews) and `production` (`main`) are **fixed ids, never redeployed**.
+  Changing them = `upgrade` by the local `astros-admin` identity, run by the
+  user, documented in `Versionamiento/x.y.z/NN_*.md`.
+- Contract changes must stay compatible with stored data: never change an
+  already-stored `#[contracttype]`; add new `DataKey` variants/types and new
+  function names (`_v2`) instead.
+- Every version: bump `package.json`, add a `CHANGELOG.md` section.
+- Vercel/CI build clients with `scripts/ci-clients.mjs` (no Rust there).
+
 ## Commands (repo root)
 
 | Command                              | What it does                                                                                                                |
