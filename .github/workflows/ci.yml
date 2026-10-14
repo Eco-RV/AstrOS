@@ -1,0 +1,46 @@
+# Checks on every PR to dev_main/main (and pushes to them). See docs/FLUJO.md.
+name: CI
+
+on:
+  pull_request:
+    branches: [dev_main, main]
+  push:
+    branches: [dev_main, main]
+
+jobs:
+  contracts:
+    name: Contratos (cargo test + fmt)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # rust-toolchain.toml pins the version; rustup installs it on first use.
+      - run: rustup show && rustup component add rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test
+      - run: cargo fmt --all -- --check
+
+  app:
+    name: App (typecheck + lint + formato + build)
+    runs-on: ubuntu-latest
+    env:
+      # Public config (same values as app/.env). Clients are generated from the
+      # STAGING contracts, like the Vercel Previews.
+      PUBLIC_STELLAR_NETWORK: TESTNET
+      PUBLIC_STELLAR_NETWORK_PASSPHRASE: "Test SDF Network ; September 2015"
+      PUBLIC_STELLAR_RPC_URL: https://soroban-testnet.stellar.org
+      PUBLIC_STELLAR_HORIZON_URL: https://horizon-testnet.stellar.org
+      PUBLIC_ATTENDANCE_CONTRACT_ID: CBYKEFCNBPQW3G2XABSKYBOGV4VAOS7QPXM3QEUXVH4T4CZECC72YSAU
+      PUBLIC_REPUTATION_CONTRACT_ID: CAIDTMGHVR2NG33A32AGALDFCXQS4JKF5DVJNMOSSP2C4TGRJ55RYDUI
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: node scripts/ci-clients.mjs
+      - run: npm install --no-audit --no-fund
+      - run: node scripts/ci-clients.mjs build
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run build
