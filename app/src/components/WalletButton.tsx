@@ -15,9 +15,9 @@ export const WalletButton = () => {
 		return (
 			<div className="wallet-connected">
 				<button onClick={() => void cavos.approveDevice()}>
-					Unlock wallet with passkey
+					Desbloquear con passkey
 				</button>
-				<button onClick={cavos.signOut}>Sign out</button>
+				<button onClick={cavos.signOut}>Cerrar sesión</button>
 			</div>
 		)
 	}
@@ -26,7 +26,7 @@ export const WalletButton = () => {
 		if (!cavos) {
 			return (
 				<button onClick={() => void connectWallet()} disabled={isPending}>
-					{isPending ? "Loading..." : "Connect"}
+					{isPending ? "Cargando…" : "Conectar"}
 				</button>
 			)
 		}
@@ -36,15 +36,15 @@ export const WalletButton = () => {
 					className="wallet-primary"
 					onClick={cavos.signIn}
 					disabled={cavos.isLoading}
-					title="Email or Google: creates a Stellar wallet for you, no extension needed (Cavos)"
+					title="Correo o Google: crea tu cuenta de Stellar sin instalar nada (Cavos)"
 				>
-					{cavos.isLoading ? "Signing in..." : "Sign in"}
+					{cavos.isLoading ? "Entrando…" : "Iniciar sesión"}
 				</button>
 				<button
 					onClick={() => void connectWallet()}
-					title="Freighter, xBull, Lobstr… (Stellar Wallets Kit)"
+					title="Freighter, xBull, Lobstr… (extensión de wallet)"
 				>
-					Use a wallet
+					Usar una wallet
 				</button>
 			</div>
 		)
@@ -63,12 +63,12 @@ export const WalletButton = () => {
 					</span>
 					<button
 						className="wallet-profile"
-						title="Copy address"
+						title="Copiar dirección"
 						onClick={() => void navigator.clipboard.writeText(address)}
 					>
 						{shortAddress(address)}
 					</button>
-					<button onClick={() => void disconnect()}>Sign out</button>
+					<button onClick={() => void disconnect()}>Cerrar sesión</button>
 				</>
 			) : (
 				<button className="wallet-profile" onClick={() => void profileModal()}>

@@ -29,13 +29,14 @@ export const CavosRoot = ({ children }: { children: ReactNode }) => {
 				// One chain + passkey restore: works without enabling social
 				// recovery in the dashboard. Signing up never asks for a passkey.
 				deviceApproval: "passkey",
-				// Google login returns here: register this exact URL in the dashboard.
+				// The @cavos/kit 0.4.2 login modal ignores this and sends the current
+				// page (origin + pathname, e.g. "http://localhost:5173/") as the Google
+				// redirect: register that exact URL in the dashboard's Callback URLs.
 				redirectUri: window.location.origin,
 			}}
 			modal={{
-				appName: "Scaffold Pura Vida",
+				appName: "AstrOS",
 				providers: ["email", "google"],
-				emailMode: "otp",
 				primaryColor: "#7b61ff",
 			}}
 		>

@@ -3,15 +3,17 @@ import { NavLink, Outlet, Route, Routes } from "react-router-dom"
 import styles from "./App.module.css"
 import ConnectAccount from "./components/ConnectAccount"
 import Debug from "./pages/Debug"
-import Escrows from "./pages/Escrows"
-import Home from "./pages/Home"
+import EventDetail from "./pages/EventDetail"
+import Events from "./pages/Events"
+import MyBadges from "./pages/MyBadges"
 
 function App() {
 	return (
 		<Routes>
 			<Route element={<AppLayout />}>
-				<Route path="/" element={<Home />} />
-				<Route path="/escrows" element={<Escrows />} />
+				<Route path="/" element={<Events />} />
+				<Route path="/evento/:id" element={<EventDetail />} />
+				<Route path="/insignias" element={<MyBadges />} />
 				<Route path="/debug" element={<Debug />} />
 				<Route path="/debug/:contractName" element={<Debug />} />
 			</Route>
@@ -23,23 +25,30 @@ const AppLayout = () => (
 	<div className={styles.AppLayout}>
 		<header className={styles.header}>
 			<NavLink to="/" className={styles.logo}>
-				Scaffold Pura Vida
+				✦ AstrOS
 			</NavLink>
 			<nav className={styles.headerNav}>
 				<NavLink
-					to="/escrows"
+					to="/"
+					end
 					className={({ isActive }) => (isActive ? styles.active : "")}
 				>
-					Escrow Studio
+					Eventos
+				</NavLink>
+				<NavLink
+					to="/insignias"
+					className={({ isActive }) => (isActive ? styles.active : "")}
+				>
+					Mis insignias
 				</NavLink>
 				<NavLink
 					to="/debug"
 					className={({ isActive }) => (isActive ? styles.active : "")}
 				>
-					Contracts
+					Contratos
 				</NavLink>
 				<a href={labPrefix()} target="_blank" rel="noreferrer">
-					Transaction Explorer
+					Explorador
 				</a>
 			</nav>
 			<ConnectAccount />
@@ -56,24 +65,17 @@ const AppLayout = () => (
 					target="_blank"
 					rel="noreferrer"
 				>
-					Built on Scaffold Stellar
+					Hecho con Scaffold Stellar
 				</a>
 				<a href="https://stellarscaffold.org" target="_blank" rel="noreferrer">
-					Scaffold docs
-				</a>
-				<a
-					href="https://docs.trustlesswork.com"
-					target="_blank"
-					rel="noreferrer"
-				>
-					Trustless Work docs
+					Docs de Scaffold
 				</a>
 				<a
 					href="https://developers.stellar.org"
 					target="_blank"
 					rel="noreferrer"
 				>
-					Stellar docs
+					Docs de Stellar
 				</a>
 			</nav>
 		</footer>

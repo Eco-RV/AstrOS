@@ -23,6 +23,8 @@ name = "me"
 default = true
 
 [development.contracts]
+# POAP-style attendance badges (contracts/attendance). `admin` can only upgrade the code.
+attendance = { client = true, constructor_args = "--admin me" }
 # `client = true` means: build -> deploy -> generate a TS client you can import as
 #   import { reputation } from "@stellar-scaffold/app-lib/clients"
 # The key must be the snake_case version of the crate `name` in its Cargo.toml.
@@ -58,6 +60,7 @@ name = "testnet-user"
 default = true
 
 [staging.contracts]
+attendance = { client = true, constructor_args = "--admin testnet-user" }
 reputation = { client = true }
 fungible_allowlist_example = { client = false }
 nft_enumerable_example = { client = false }

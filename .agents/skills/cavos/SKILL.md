@@ -1,7 +1,7 @@
 ---
 name: cavos
 description:
-  Wallet-less onboarding with Cavos embedded wallets (@cavos/kit 0.2.5) as wired
+  Wallet-less onboarding with Cavos embedded wallets (@cavos/kit 0.4.2) as wired
   in THIS repo - users sign in with email or Google and get a self-custodial
   Stellar G… account, no extension or seed phrase. Use when the user wants "no
   wallet", "login with email/Google", social login, embedded/invisible wallets,
@@ -10,7 +10,7 @@ description:
   transactions.
 license: Apache-2.0
 metadata:
-  sdk: "@cavos/kit@0.2.5 (pinned)"
+  sdk: "@cavos/kit@0.4.2 (pinned)"
   docs: "https://docs.cavos.xyz/llms-full.txt"
 ---
 

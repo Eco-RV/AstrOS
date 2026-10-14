@@ -4,6 +4,18 @@ Plantilla para construir aplicaciones descentralizadas (dApps) en Stellar con la
 
 Construida sobre [Scaffold Stellar](https://stellarscaffold.org), de [The Aha Company](https://theaha.co).
 
+## Lo que construí: AstrOS, insignias de asistencia (estilo POAP)
+
+Proyecto de aprendizaje inspirado en POAP. Quien organiza crea un evento con su insignia; quienes asisten la reclaman mientras el evento está abierto y la guardan en su cuenta de Stellar (testnet).
+
+- **Contrato** `contracts/attendance` (Soroban): `create_event`, `claim`, `close_event`, `latest_events`, `get_event`, `get_badge`, `badges_of`. Cualquiera crea eventos; una insignia por cuenta y evento; las insignias son personales (no se pueden transferir); límite opcional de insignias y ventana de fechas.
+- **Login** con Cavos (correo o Google) o con una wallet como Freighter, siempre a través de `useWallet()`. Sin Trustless Work: nadie retiene dinero.
+- **Datos**: nombre, fechas e insignias van on-chain (públicos y verificables); la imagen es solo una URL; ningún dato personal va on-chain.
+- **Pantallas**: `/` eventos y creación, `/evento/:id` detalle y reclamo, `/insignias` mi colección.
+- **Límites honestos**: el reclamo abierto prueba que la cuenta reclamó durante el evento, no que la persona estuvo físicamente; una cuenta no es una persona. Los datos tienen un TTL de ~30 días que se renueva al escribir.
+
+Probar: `npm start`, abre http://localhost:5173, inicia sesión, pulsa «Fondos de prueba», crea un evento y reclama su insignia.
+
 ## Configuración con tu agente
 
 Copia este prompt en tu agente de código (Claude Code, Codex, Cursor, OpenCode, Copilot u otro), desde una carpeta vacía o desde tu copia de este repositorio. El agente instala lo necesario, despliega los contratos en testnet, levanta la aplicación y te explica cómo está organizado el proyecto.
@@ -242,7 +254,7 @@ Ejecuta `npm run doctor` y consulta la [guía de problemas comunes](.agents/skil
 
 - `stellar-scaffold-cli` **0.0.27** con la configuración **v1** (`environments.toml`). El template oficial de Scaffold ya usa un formato nuevo (v2) que esta versión del CLI no soporta, por eso este repositorio se distribuye ya generado y no es necesario ejecutar `stellar scaffold init`.
 - `@trustless-work/escrow` **3.0.5** (API V1, estable).
-- `@cavos/kit` **0.2.5**.
+- `@cavos/kit` **0.4.2** (actualizado desde 0.2.5: el servidor de Cavos ya no acepta el `nonce` de 0.2.5).
 - `soroban-sdk` **26.1** y OpenZeppelin `stellar-*` **0.7.2**.
 
 ## Comparte tu proyecto
