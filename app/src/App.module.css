@@ -1,74 +1,191 @@
 .AppLayout {
 	min-height: 100vh;
+	min-height: 100dvh;
 	display: flex;
 	flex-direction: column;
 }
 
+/* ── Header ────────────────────────────────────────────────────────────── */
+
 .header {
+	position: sticky;
+	top: 0;
+	z-index: 20;
 	display: flex;
 	align-items: center;
-	gap: 2rem;
-	padding: 1rem 3rem;
+	gap: 1.5rem;
+	height: var(--header-h);
+	padding: 0 max(16px, env(safe-area-inset-left)) 0
+		max(16px, env(safe-area-inset-right));
+	background: rgba(11, 8, 32, 0.65);
+	backdrop-filter: blur(14px);
+	-webkit-backdrop-filter: blur(14px);
 	border-bottom: 1px solid var(--color-border);
 }
 
 .logo {
-	font-weight: 600;
-	font-size: 1.1rem;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
 	color: var(--color-text);
 	text-decoration: none;
-	white-space: nowrap;
+}
+
+.seal {
+	transition: transform 0.6s var(--ease-spring);
+}
+
+.logo:hover .seal {
+	transform: rotate(-25deg) scale(1.08);
 }
 
 .headerNav {
 	display: flex;
-	gap: 0.5rem;
+	gap: 0.25rem;
 	flex: 1;
 }
 
 .headerNav a {
+	position: relative;
 	color: var(--color-text-muted);
 	text-decoration: none;
-	padding: 0.25rem 0.5rem;
-	border-radius: var(--radius);
-	font-size: 0.9rem;
+	padding: 0.45rem 0.85rem;
+	border-radius: 999px;
+	font-size: 0.92rem;
+	font-weight: 500;
+	transition:
+		color 0.2s,
+		background 0.2s;
 }
 
 .headerNav a:hover {
 	color: var(--color-text);
-	background: var(--color-surface);
+	background: rgba(255, 255, 255, 0.06);
 }
 
 .headerNav a.active {
 	color: var(--color-text);
-	font-weight: 500;
+	background: rgba(155, 123, 255, 0.16);
 }
+
+/* ── Content ───────────────────────────────────────────────────────────── */
 
 .main {
 	flex: 1;
-	padding: 2rem 3rem;
-	max-width: 1200px;
-	margin: 0 auto;
 	width: 100%;
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 1.5rem 16px 2.5rem;
+	animation: fade-up 0.45s var(--ease-out);
 }
 
 .footer {
-	border-top: 1px solid var(--color-border);
-	padding: 1rem 3rem;
-}
-
-.footerNav {
-	display: flex;
-	gap: 1.5rem;
-	justify-content: flex-end;
-}
-
-.footerNav a {
+	text-align: center;
+	padding: 1.25rem 16px 1.5rem;
 	color: var(--color-text-muted);
-	text-decoration: none;
-	font-size: 0.875rem;
+	font-size: 0.8rem;
 }
 
-.footerNav a:hover {
-	color: var(--color-text);
+.footer span {
+	margin-left: 0.35rem;
+	padding: 0.1rem 0.5rem;
+	border-radius: 999px;
+	border: 1px solid var(--color-border-strong);
+	font-size: 0.7rem;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+}
+
+/* ── Mobile tab bar ────────────────────────────────────────────────────── */
+
+.tabbar {
+	display: none;
+}
+
+@media (max-width: 767px) {
+	.headerNav {
+		display: none;
+	}
+
+	.header {
+		justify-content: space-between;
+	}
+
+	.main {
+		padding-top: 1rem;
+	}
+
+	/* Leave room for the fixed tab bar. */
+	.footer {
+		padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 1rem);
+	}
+
+	.tabbar {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 30;
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: end;
+		height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+		padding: 0 12px env(safe-area-inset-bottom);
+		background: rgba(14, 10, 38, 0.85);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border-top: 1px solid var(--color-border);
+	}
+
+	.tabbar a {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 2px;
+		height: var(--tabbar-h);
+		color: var(--color-text-muted);
+		text-decoration: none;
+		font-size: 0.72rem;
+		font-weight: 500;
+		transition: color 0.2s;
+	}
+
+	.tabbar a.active {
+		color: var(--color-text);
+	}
+
+	.tabbar a.active svg {
+		color: var(--color-star);
+		filter: drop-shadow(0 0 6px rgba(255, 214, 107, 0.6));
+	}
+
+	.createTab {
+		padding: 0 1.25rem;
+	}
+
+	.createButton {
+		display: grid;
+		place-items: center;
+		width: 56px;
+		height: 56px;
+		margin-top: -28px;
+		border-radius: 50%;
+		background: var(--gradient-aurora);
+		color: #fff;
+		font-size: 1.8rem;
+		line-height: 1;
+		box-shadow:
+			0 0 0 5px var(--color-bg),
+			0 8px 24px rgba(123, 97, 255, 0.55);
+		transition: transform 0.3s var(--ease-spring);
+	}
+
+	.createTab:active .createButton {
+		transform: scale(0.92);
+	}
+
+	.createTab.active .createButton {
+		transform: rotate(45deg);
+	}
 }

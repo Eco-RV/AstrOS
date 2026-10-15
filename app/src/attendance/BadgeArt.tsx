@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { imageSrc } from "../lib/ipfs"
 import styles from "./attendance.module.css"
 
 const GRADIENTS = [
@@ -18,40 +19,54 @@ const initials = (name: string) =>
 		.map((w) => w[0]?.toUpperCase())
 		.join("")
 
-/** Round badge: the event image if it has one, otherwise a colored seal. */
+/**
+ * Round badge with a notched seal edge: the event image if it has one,
+ * otherwise a colored seal with the initials. `orbit` adds a spinning ring
+ * (used for events that are open right now).
+ */
 export const BadgeArt = ({
 	eventId,
 	name,
 	imageUrl,
 	size = 96,
 	muted = false,
+	orbit = false,
 }: {
 	eventId: number
 	name: string
 	imageUrl?: string
 	size?: number
 	muted?: boolean
+	orbit?: boolean
 }) => {
 	const [broken, setBroken] = useState(false)
 	const [from, to] = GRADIENTS[eventId % GRADIENTS.length] ?? GRADIENTS[0]
-	const showImage = Boolean(imageUrl) && !broken
+	const src = imageSrc(imageUrl)
+	const showImage = Boolean(src) && !broken
 
 	return (
-		<div
-			className={`${styles.badgeArt} ${muted ? styles.muted : ""}`}
-			style={{
-				width: size,
-				height: size,
-				fontSize: size / 3,
-				background: `linear-gradient(135deg, ${from}, ${to})`,
-			}}
-			aria-hidden
-		>
-			{showImage ? (
-				<img src={imageUrl} alt="" onError={() => setBroken(true)} />
-			) : (
-				initials(name) || "★"
-			)}
+		<div className={`${styles.badgeWrap} ${orbit ? styles.orbit : ""}`}>
+			<div
+				className={`${styles.badgeArt} ${muted ? styles.muted : ""}`}
+				style={{
+					width: size,
+					height: size,
+					fontSize: size / 3,
+					background: `linear-gradient(135deg, ${from}, ${to})`,
+				}}
+				aria-hidden
+			>
+				{showImage ? (
+					<img
+						src={src}
+						alt=""
+						loading="lazy"
+						onError={() => setBroken(true)}
+					/>
+				) : (
+					initials(name) || "★"
+				)}
+			</div>
 		</div>
 	)
 }

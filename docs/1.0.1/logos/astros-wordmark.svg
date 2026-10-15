@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 244 96" role="img" aria-label="AstrOS"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#241B4D"/><stop offset="1" stop-color="#0B0820"/></linearGradient><linearGradient id="au" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B61FF"/><stop offset=".55" stop-color="#C86DD7"/><stop offset="1" stop-color="#3DD6F5"/></linearGradient></defs>
+<g font-family="'Space Grotesk', 'Inter', system-ui, sans-serif" font-weight="700" font-size="64" fill="currentColor">
+<text x="4" y="70" textLength="116" lengthAdjust="spacingAndGlyphs">Astr</text>
+<text x="200" y="70" textLength="38" lengthAdjust="spacingAndGlyphs">S</text>
+</g>
+<g transform="rotate(-20 164 47)">
+<path d="M130 47 A34 9 0 0 1 198 47" fill="none" stroke="#FFD66B" stroke-width="4" opacity=".7"/>
+<circle cx="164" cy="47" r="22" fill="url(#au)"/>
+<path d="M130 47 A34 9 0 0 0 198 47" fill="none" stroke="#FFD66B" stroke-width="4" stroke-linecap="round"/>
+</g>
+<path d="M186 8 Q186 18 196 18 Q186 18 186 28 Q186 18 176 18 Q186 18 186 8Z" fill="#FFD66B"/>
+</svg>

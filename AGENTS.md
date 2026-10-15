@@ -62,10 +62,11 @@ verified, version-specific facts that differ from your training data.
    `scaffold.yml` v2.
 7. Trustless Work is **API V1** with `@trustless-work/escrow@3.0.5`. Don't
    upgrade to the 5.x beta or mix V2 payloads.
-8. Reuse what exists before writing new code: `contracts/reputation` (contract
-   template), `ReputationPanel` (contract reads/writes from React), and, only
-   for escrow apps, `useEscrowTx` (every escrow write), `useMyEscrows`/
-   `useEscrow`, `EscrowCard`, `CreateEscrowForm`, `SetupChecklist`.
+8. Reuse what exists before writing new code: `contracts/attendance` and
+   `contracts/reputation` (contract templates), `useAttendance` /
+   `useAttendanceWrite` (contract reads and signed writes from React),
+   `BadgeArt`, the brand components in `app/src/brand/`. The escrow UI was
+   removed in 1.0.1: if an app needs escrows, follow the `trustless-work` skill.
 9. **Every signature goes through `useWallet().signTransaction`** (works for
    Cavos and extension wallets alike). Never import Stellar Wallets Kit or Cavos
    directly in features.
@@ -108,7 +109,6 @@ Follow `docs/FLUJO.md`. In short:
 | `npm run contracts:test`             | `cargo test` for all contracts                                                                                              |
 | `npm run typecheck` / `npm run lint` | TypeScript / ESLint for the app                                                                                             |
 | `npm run check`                      | contracts:test + Rust/TS formatting + typecheck + lint (run before saying "done")                                           |
-| `npm run tw:smoke`                   | end-to-end Trustless Work test (deploy→fund→approve→release) signed by the local deployer key                               |
 
 Scaffold/Stellar CLI commands must run from `app/` (its `.env` sets a relative
 config dir). On a fresh clone, run `npm run contracts:build` once before
@@ -117,18 +117,20 @@ config dir). On a fresh clone, run `npm run contracts:build` once before
 ## Layout
 
 ```
-contracts/reputation/     example Soroban contract (reviews tied to escrows) + tests
+contracts/attendance/     AstrOS contract: events and soulbound badges + tests
+contracts/reputation/     example Soroban contract (template, not used by the app)
 contracts/fungible-allowlist, nft-enumerable/   OpenZeppelin examples (not deployed by default)
 environments.toml         contracts per environment (development = testnet)
-app/src/pages/            Home, Escrows (Escrow Studio), Debug (deployed contracts)
-app/src/trustless/        Trustless Work integration (config, provider, hooks, components)
+app/src/pages/            Events, EventDetail, CreateEvent, MyBadges ("Mi constelación")
+app/src/attendance/       attendance contract hooks, event form, badge art, animations
+app/src/brand/            logo (Seal, Wordmark) and the starfield background
 app/src/cavos/            Cavos embedded wallets (optional, PUBLIC_CAVOS_APP_ID)
 app/src/providers/        WalletProvider: one useWallet() for Cavos + extension wallets
-app/src/components/       shared UI (ReputationPanel, wallet buttons…)
+app/src/components/       shared UI (account menu, auto-funding banner…)
 app/src/hooks/            useWallet, useNotification, useSubscription
 app-lib/                  network env, wallet kit, friendbot, events (shared TS lib)
 app-lib/clients/          GENERATED contract clients (gitignored)
-scripts/                  doctor, tw-smoke, agents-sync, dev-guard
+scripts/                  doctor, agents-sync, dev-guard, ci-clients
 docs/AGENT-SETUP.md       per-agent setup and optional MCP servers
 ```
 

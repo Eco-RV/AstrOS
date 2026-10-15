@@ -3,6 +3,56 @@
 Formato: una sección por versión (`## x.y.z — AAAA-MM-DD`, o `— sin publicar`
 mientras se desarrolla). Flujo completo en [docs/FLUJO.md](docs/FLUJO.md).
 
+## 1.0.1 — sin publicar
+
+"Tu constelación": rediseño mobile first para la demo de clase. Plan completo en
+[docs/1.0.1/PLAN.md](docs/1.0.1/PLAN.md).
+
+### Diseño
+
+- Tema "cielo nocturno": nueva paleta, tipografías Space Grotesk + Inter, fondo
+  de estrellas con parallax y logo nuevo (sello + wordmark; propuestas en
+  `docs/1.0.1/logos/`).
+- Móvil: barra inferior con Eventos · ＋ Crear · Mi constelación, botón de
+  reclamar fijo al alcance del pulgar.
+- Inicio con "Tu misión" en 3 pasos (entra, reclama, crea) que se marcan solos,
+  evento destacado (`PUBLIC_FEATURED_EVENT_ID`) y filtros de eventos.
+- Reclamar una insignia dispara la animación "supernova" (con vibración en
+  móvil).
+- "Mi constelación": las insignias como estrellas unidas en orden de reclamo,
+  más vista de lista y estadísticas.
+- Crear evento en su propia página (`/crear`), con atajos de horario y vista
+  previa de la insignia.
+- Menú de cuenta (avatar) con saldo, dirección, enlace al explorador y cierre de
+  sesión.
+
+### Cuentas
+
+- Las cuentas nuevas reciben XLM de prueba automáticamente (Friendbot) al
+  iniciar sesión, con aviso de progreso.
+
+### Imágenes
+
+- Las imágenes `ipfs://<CID>` se muestran con `PUBLIC_IPFS_GATEWAY`. (La subida
+  de fotos a IPFS con Pinata viene en esta misma versión, pendiente.)
+
+### Limpieza
+
+- Se quitaron Escrow Studio (Trustless Work), el panel de reputación, la página
+  de contratos (Debug), `tw:smoke` y la dependencia `@trustless-work/escrow`.
+- La app ya no usa el contrato `reputation`; sus despliegues de staging y
+  producción quedan donde están (sin cambios). La variable
+  `PUBLIC_REPUTATION_CONTRACT_ID` ya no hace falta en Vercel.
+
+### Contratos
+
+- Sin cambios: no hay pasos en `Versionamiento/1.0.1/`.
+
+### Configuración
+
+- Vercel (Production y Preview): `PUBLIC_FEATURED_EVENT_ID` (opcional) y
+  `PUBLIC_IPFS_GATEWAY`.
+
 ## 1.0.0 — 2026-10-14
 
 Primera versión publicada de AstrOS: insignias de asistencia estilo POAP en

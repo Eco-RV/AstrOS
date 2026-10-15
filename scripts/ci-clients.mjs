@@ -3,7 +3,7 @@
 // contracts:build` do this with `stellar scaffold`; here the bindings come from
 // the contracts already deployed on the network, picked by env var:
 //
-//   PUBLIC_ATTENDANCE_CONTRACT_ID   PUBLIC_REPUTATION_CONTRACT_ID
+//   PUBLIC_ATTENDANCE_CONTRACT_ID
 //   PUBLIC_STELLAR_RPC_URL          (optional, defaults to the testnet RPC)
 //
 //   node scripts/ci-clients.mjs          generate (run BEFORE npm install, so
@@ -22,7 +22,6 @@ const SDK = "@stellar/stellar-sdk@14.5.0"
 // Contract key (environments.toml) -> env var with its id.
 const CONTRACTS = {
 	attendance: "PUBLIC_ATTENDANCE_CONTRACT_ID",
-	reputation: "PUBLIC_REPUTATION_CONTRACT_ID",
 }
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")

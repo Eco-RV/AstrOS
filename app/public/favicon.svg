@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="AstrOS"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#241B4D"/><stop offset="1" stop-color="#0B0820"/></linearGradient><linearGradient id="au" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B61FF"/><stop offset=".55" stop-color="#C86DD7"/><stop offset="1" stop-color="#3DD6F5"/></linearGradient></defs>
+<circle cx="64" cy="64" r="56" fill="url(#au)"/>
+<circle cx="64" cy="64" r="58" fill="none" stroke="url(#au)" stroke-width="8" stroke-dasharray="4.555 4.555"/>
+<circle cx="64" cy="64" r="47" fill="#0B0820"/>
+<circle cx="64" cy="64" r="42" fill="none" stroke="#fff" stroke-opacity=".15" stroke-width="1.5" stroke-dasharray="2 4"/>
+<g transform="rotate(-20 64 70)">
+<path d="M28 70 A36 10 0 0 1 100 70" fill="none" stroke="#FFD66B" stroke-width="4" opacity=".7"/>
+<circle cx="64" cy="70" r="20" fill="url(#au)"/>
+<path d="M28 70 A36 10 0 0 0 100 70" fill="none" stroke="#FFD66B" stroke-width="4" stroke-linecap="round"/>
+</g>
+<path d="M90 26 Q90 36 100 36 Q90 36 90 46 Q90 36 80 36 Q90 36 90 26Z" fill="#fff"/>
+<g fill="#fff" opacity=".7"><circle cx="40" cy="40" r="1.5"/><circle cx="36" cy="88" r="1.2"/><circle cx="94" cy="94" r="1.4"/></g>
+</svg>

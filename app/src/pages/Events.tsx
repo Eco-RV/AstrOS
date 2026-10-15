@@ -2,103 +2,190 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import styles from "../attendance/attendance.module.css"
 import { BadgeArt } from "../attendance/BadgeArt"
-import { CreateEventForm } from "../attendance/CreateEventForm"
+import { Mission } from "../attendance/Mission"
 import {
+	type AttendanceEvent,
+	type EventStatus,
 	eventStatus,
 	formatDate,
 	STATUS_LABEL,
+	useBadgesOf,
+	useEvent,
 	useLatestEvents,
 } from "../attendance/useAttendance"
 import { useWallet } from "../hooks/useWallet"
 
+const featuredRaw = import.meta.env.PUBLIC_FEATURED_EVENT_ID as
+	| string
+	| undefined
+const FEATURED_ID =
+	featuredRaw && /^\d+$/.test(featuredRaw) ? Number(featuredRaw) : undefined
+
+type Filter = "all" | "open" | "upcoming" | "past"
+const FILTERS: { id: Filter; label: string }[] = [
+	{ id: "all", label: "Todos" },
+	{ id: "open", label: "Abiertos" },
+	{ id: "upcoming", label: "Próximos" },
+	{ id: "past", label: "Terminados" },
+]
+const matches = (filter: Filter, status: EventStatus) =>
+	filter === "all" ||
+	filter === status ||
+	(filter === "past" && status !== "open" && status !== "upcoming")
+
 const Events = () => {
 	const { address } = useWallet()
 	const { data: events, isLoading, error } = useLatestEvents()
-	const [creating, setCreating] = useState(false)
+	const { data: badges } = useBadgesOf(address)
+	const { data: featured } = useEvent(
+		FEATURED_ID ?? -1,
+		FEATURED_ID !== undefined,
+	)
+	const [filter, setFilter] = useState<Filter>("all")
+
+	const hasEvent = Boolean(
+		address && events?.some((e) => e.organizer === address),
+	)
+	const visible = events?.filter((e) => matches(filter, eventStatus(e))) ?? []
 
 	return (
 		<div className={styles.page}>
 			<section className={styles.hero}>
-				<h1>AstrOS ✦</h1>
-				<p className={styles.tagline}>Insignias de asistencia en Stellar</p>
+				<span className={styles.kicker}>Stellar · red de pruebas</span>
+				<h1>
+					Cada evento, <span className={styles.gradientText}>una estrella</span>
+				</h1>
 				<p>
-					Crea un evento y quienes asistan reclaman su insignia mientras está
-					abierto. Cada insignia queda registrada en la blockchain de Stellar
-					(testnet) a nombre de tu cuenta: es personal, no se puede transferir y
-					cualquiera puede verificarla.
+					Reclama la insignia de los eventos a los que asistes. Queda a tu
+					nombre en la blockchain: nadie te la puede quitar y cualquiera puede
+					verificarla.
 				</p>
-				{address ? (
-					<button
-						className={styles.primary}
-						onClick={() => setCreating((c) => !c)}
-					>
-						{creating ? "Cancelar" : "＋ Crear evento"}
-					</button>
-				) : (
-					<p className={styles.hint}>
-						Inicia sesión arriba con tu correo o Google para crear eventos y
-						reclamar insignias.
-					</p>
-				)}
 			</section>
 
-			{creating && address && (
-				<section className="card">
-					<h2>Nuevo evento</h2>
-					<CreateEventForm onDone={() => setCreating(false)} />
-				</section>
-			)}
+			<Mission
+				signedIn={Boolean(address)}
+				hasBadge={Boolean(badges?.length)}
+				hasEvent={hasEvent}
+				claimTo={featured ? `/evento/${featured.id}` : "#comunidad"}
+			/>
 
-			<section>
-				<h2>Eventos recientes</h2>
-				{isLoading && <p className={styles.hint}>Cargando eventos…</p>}
+			{featured && <FeaturedEvent event={featured} />}
+
+			<section id="comunidad">
+				<h2 className={styles.sectionTitle}>
+					Eventos de la comunidad
+					{events && <small>{events.length} en total</small>}
+				</h2>
+				<div className={styles.chips} role="toolbar" aria-label="Filtrar">
+					{FILTERS.map((f) => (
+						<button
+							key={f.id}
+							aria-pressed={filter === f.id}
+							onClick={() => setFilter(f.id)}
+						>
+							{f.label}
+						</button>
+					))}
+				</div>
+
+				{isLoading && (
+					<div className={styles.grid}>
+						{[0, 1, 2, 3].map((i) => (
+							<div key={i} className={styles.skeleton} />
+						))}
+					</div>
+				)}
 				{error && (
 					<p className={styles.error}>
 						No se pudieron leer los eventos: {error.message}
 					</p>
 				)}
-				{events?.length === 0 && (
-					<p className={styles.hint}>Aún no hay eventos. ¡Crea el primero!</p>
+				{events && visible.length === 0 && (
+					<div className={styles.empty}>
+						<strong>Aquí todavía no brilla nada</strong>
+						<span>
+							{events.length === 0
+								? "Aún no hay eventos. ¡Crea el primero!"
+								: "No hay eventos con este filtro."}
+						</span>
+						<Link to="/crear" className={`${styles.linkButton} btn-primary`}>
+							＋ Crear evento
+						</Link>
+					</div>
 				)}
 				<div className={styles.grid}>
-					{events?.map((event) => {
-						const status = eventStatus(event)
-						return (
-							<Link
-								key={event.id}
-								to={`/evento/${event.id}`}
-								className={`card ${styles.eventCard}`}
-							>
-								<BadgeArt
-									eventId={event.id}
-									name={event.name}
-									imageUrl={event.image_url}
-									size={64}
-									muted={status !== "open"}
-								/>
-								<div>
-									<span className={`${styles.pill} ${styles[status]}`}>
-										{STATUS_LABEL[status]}
-									</span>
-									<h3>{event.name}</h3>
-									<p className={styles.meta}>
-										{formatDate(event.starts_at)}
-										{event.location && ` · ${event.location}`}
-									</p>
-									<p className={styles.meta}>
-										{event.claimed}
-										{event.max_claims > 0 && ` / ${event.max_claims}`}{" "}
-										{event.claimed === 1
-											? "insignia reclamada"
-											: "insignias reclamadas"}
-									</p>
-								</div>
-							</Link>
-						)
-					})}
+					{visible.map((event, i) => (
+						<EventCard key={event.id} event={event} index={i} />
+					))}
 				</div>
 			</section>
 		</div>
+	)
+}
+
+const FeaturedEvent = ({ event }: { event: AttendanceEvent }) => {
+	const status = eventStatus(event)
+	return (
+		<Link to={`/evento/${event.id}`} className={styles.featured}>
+			<BadgeArt
+				eventId={event.id}
+				name={event.name}
+				imageUrl={event.image_url}
+				size={104}
+				orbit={status === "open"}
+			/>
+			<div className={styles.featuredBody}>
+				<span className={styles.featuredTag}>★ Evento destacado</span>
+				<h3>{event.name}</h3>
+				<p className={styles.meta}>
+					{event.location || "En línea"} · {event.claimed}{" "}
+					{event.claimed === 1 ? "insignia reclamada" : "insignias reclamadas"}
+				</p>
+				<span className={`${styles.pill} ${styles[status]}`}>
+					{STATUS_LABEL[status]}
+				</span>
+			</div>
+		</Link>
+	)
+}
+
+const EventCard = ({
+	event,
+	index,
+}: {
+	event: AttendanceEvent
+	index: number
+}) => {
+	const status = eventStatus(event)
+	return (
+		<Link
+			to={`/evento/${event.id}`}
+			className={`card ${styles.eventCard} ${styles.stagger}`}
+			style={{ "--i": index } as React.CSSProperties}
+		>
+			<BadgeArt
+				eventId={event.id}
+				name={event.name}
+				imageUrl={event.image_url}
+				size={64}
+				muted={status !== "open" && status !== "upcoming"}
+			/>
+			<div>
+				<span className={`${styles.pill} ${styles[status]}`}>
+					{STATUS_LABEL[status]}
+				</span>
+				<h3>{event.name}</h3>
+				<p className={styles.meta}>
+					{formatDate(event.starts_at)}
+					{event.location && ` · ${event.location}`}
+				</p>
+				<p className={styles.meta}>
+					✦ {event.claimed}
+					{event.max_claims > 0 && ` / ${event.max_claims}`}{" "}
+					{event.claimed === 1 ? "insignia" : "insignias"}
+				</p>
+			</div>
+		</Link>
 	)
 }
 

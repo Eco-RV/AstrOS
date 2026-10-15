@@ -148,7 +148,8 @@ stellar contract invoke --id attendance --source me --network testnet -- latest_
 
 ```
 contracts/attendance/     contrato de eventos e insignias + tests
-app/src/pages/            Events (/), EventDetail (/evento/:id), MyBadges (/insignias), Debug (/debug)
+app/src/pages/            Events (/), CreateEvent (/crear), EventDetail (/evento/:id), MyBadges (/insignias)
+app/src/brand/            logo y fondo de estrellas
 app/src/attendance/       hooks del contrato, formulario de evento, arte de las insignias
 app/src/cavos/            inicio de sesión con Cavos (@cavos/kit 0.4.2)
 app/src/providers/        WalletProvider: un único useWallet() para Cavos y extensiones
