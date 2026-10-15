@@ -61,10 +61,16 @@ export const useLatestEvents = () =>
 		queryFn: async () => (await attendance.latest_events({ limit: 50 })).result,
 	})
 
-export const useEvent = (eventId: number, enabled = true) =>
+/** `refetchInterval` (ms) keeps it live, e.g. on the projector screen. */
+export const useEvent = (
+	eventId: number,
+	enabled = true,
+	refetchInterval?: number,
+) =>
 	useQuery({
 		queryKey: [KEY, "event", eventId],
 		enabled: enabled && Number.isInteger(eventId) && eventId >= 0,
+		refetchInterval,
 		queryFn: async () => {
 			const r = (await attendance.get_event({ event_id: eventId })).result
 			if (r.isErr()) throw new Error(r.unwrapErr().message)

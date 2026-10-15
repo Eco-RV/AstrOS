@@ -23,6 +23,10 @@ mientras se desarrolla). Flujo completo en [docs/FLUJO.md](docs/FLUJO.md).
   más vista de lista y estadísticas.
 - Crear evento en su propia página (`/crear`), con atajos de horario y vista
   previa de la insignia.
+- Modo presentación (`/evento/:id/proyectar`, botón «Proyectar» para quien
+  organiza): QR gigante al evento, contador en vivo que rebota con cada
+  insignia, estrella fugaz por reclamo, últimas direcciones que reclamaron y los
+  3 pasos para la clase. Avisa si el QR apunta a localhost.
 - Menú de cuenta (avatar) con saldo, dirección, enlace al explorador y cierre de
   sesión.
 

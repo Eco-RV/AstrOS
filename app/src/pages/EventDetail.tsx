@@ -184,6 +184,15 @@ const EventDetail = () => {
 							</p>
 						)}
 						<button onClick={() => void share()}>Compartir</button>
+						{isOrganizer && (
+							<Link
+								to={`/evento/${event.id}/proyectar`}
+								className={styles.linkButton}
+								title="QR grande y contador en vivo para el proyector"
+							>
+								📽 Proyectar
+							</Link>
+						)}
 						{isOrganizer && !event.closed && status !== "ended" && (
 							<button
 								className="btn-ghost"

@@ -8,6 +8,7 @@ import CreateEvent from "./pages/CreateEvent"
 import EventDetail from "./pages/EventDetail"
 import Events from "./pages/Events"
 import MyBadges from "./pages/MyBadges"
+import Projector from "./pages/Projector"
 
 function App() {
 	return (
@@ -18,6 +19,8 @@ function App() {
 				<Route path="/evento/:id" element={<EventDetail />} />
 				<Route path="/insignias" element={<MyBadges />} />
 			</Route>
+			{/* Full-screen, no header or tab bar: for the classroom projector. */}
+			<Route path="/evento/:id/proyectar" element={<Projector />} />
 		</Routes>
 	)
 }
