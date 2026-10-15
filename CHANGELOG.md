@@ -3,7 +3,7 @@
 Formato: una sección por versión (`## x.y.z — AAAA-MM-DD`, o `— sin publicar`
 mientras se desarrolla). Flujo completo en [docs/FLUJO.md](docs/FLUJO.md).
 
-## 1.0.1 — sin publicar
+## 1.0.1 — 2026-10-15
 
 "Tu constelación": rediseño mobile first para la demo de clase. Plan completo en
 [docs/1.0.1/PLAN.md](docs/1.0.1/PLAN.md).

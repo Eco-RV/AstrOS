@@ -1,7 +1,7 @@
 # AstrOS 1.0.1 — "Tu constelación" (demo de clase del sábado)
 
-> Estado: **en desarrollo** (limpieza y diseño). Rama: `feature/1.0.1` desde
-> `dev_main`.
+> Estado: **publicado** en v1.0.1 (pendiente: PWA instalable y pruebas en
+> móviles reales). Rama: `feature/1.0.1` desde `dev_main`.
 
 ## 1. Objetivo
 
