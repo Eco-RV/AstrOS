@@ -36,7 +36,8 @@ mientras se desarrolla). Flujo completo en [docs/FLUJO.md](docs/FLUJO.md).
 - Crear evento empieza con la foto: cámara o galería, se comprime en el
   navegador (máx. 800 px, JPEG) y se sube al instante a IPFS público con Pinata
   mediante la función `api/upload.mjs`. En el contrato se guarda `ipfs://<CID>`.
-- Las imágenes `ipfs://<CID>` se muestran con `PUBLIC_IPFS_GATEWAY`.
+- Las imágenes `ipfs://<CID>` se muestran con `PUBLIC_IPFS_GATEWAY` (acepta el
+  dominio sin `https://`) y, si falla, con gateway.pinata.cloud e ipfs.io.
 - Sigue disponible pegar un enlace `https://` o `ipfs://` en lugar de subir
   foto.
 

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { imageSrc } from "../lib/ipfs"
+import { imageSources } from "../lib/ipfs"
 import styles from "./attendance.module.css"
 
 const GRADIENTS = [
@@ -21,7 +21,8 @@ const initials = (name: string) =>
 
 /**
  * Round badge with a notched seal edge: the event image if it has one,
- * otherwise a colored seal with the initials. `orbit` adds a spinning ring
+ * otherwise a colored seal with the initials. If a gateway fails it tries the
+ * next one, and falls back to the seal when none works. `orbit` adds a spinning ring
  * (used for events that are open right now).
  */
 export const BadgeArt = ({
@@ -39,10 +40,11 @@ export const BadgeArt = ({
 	muted?: boolean
 	orbit?: boolean
 }) => {
-	const [broken, setBroken] = useState(false)
+	// Failed attempts for the current image (reset when the image changes).
+	const [failed, setFailed] = useState({ url: imageUrl, count: 0 })
+	const attempt = failed.url === imageUrl ? failed.count : 0
 	const [from, to] = GRADIENTS[eventId % GRADIENTS.length] ?? GRADIENTS[0]
-	const src = imageSrc(imageUrl)
-	const showImage = Boolean(src) && !broken
+	const src = imageSources(imageUrl)[attempt]
 
 	return (
 		<div className={`${styles.badgeWrap} ${orbit ? styles.orbit : ""}`}>
@@ -56,12 +58,13 @@ export const BadgeArt = ({
 				}}
 				aria-hidden
 			>
-				{showImage ? (
+				{src ? (
 					<img
+						key={src}
 						src={src}
 						alt=""
 						loading="lazy"
-						onError={() => setBroken(true)}
+						onError={() => setFailed({ url: imageUrl, count: attempt + 1 })}
 					/>
 				) : (
 					initials(name) || "★"
