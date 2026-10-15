@@ -42,8 +42,10 @@ Decidido el 2026-10-14: **IPFS con Pinata**.
   app lo convierte en URL con `PUBLIC_IPFS_GATEWAY` (el gateway de Pinata del
   proyecto; `https://ipfs.io` como respaldo), así se puede cambiar de gateway
   sin tocar datos guardados.
-- En local, `/api` no corre con Vite solo: `vercel dev` o un middleware de Vite
-  que llame a la misma función.
+- En local, un middleware de Vite (`app/vite.config.ts`) sirve la misma función
+  en `/api/upload`; el JWT va en `app/.env.local`.
+- Implementado en `api/upload.mjs`, `app/src/lib/photo.ts` y
+  `app/src/attendance/PhotoPicker.tsx`.
 - Las fotos en IPFS no se pueden borrar de forma garantizada: el aviso lo dice.
 
 Opciones que se evaluaron:

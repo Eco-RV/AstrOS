@@ -106,6 +106,20 @@ try {
 	fail(`Can't reach RPC ${rpcUrl}: ${e.message}`, "check your internet / proxy")
 }
 
+// ── Photo uploads (Pinata, server-only secret) ─────────────────────────────
+{
+	const local = resolve(app, ".env.local")
+	const hasJwt =
+		Boolean(process.env.PINATA_JWT) ||
+		(existsSync(local) && /^PINATA_JWT=\S+/m.test(readFileSync(local, "utf8")))
+	hasJwt
+		? ok("PINATA_JWT set: event photos can be uploaded to IPFS")
+		: warn(
+				"No PINATA_JWT: creating events works, but photo uploads will fail",
+				"Pinata → API Keys → new key with Files: Write → put the JWT in app/.env.local as PINATA_JWT=… (never PUBLIC_*)",
+			)
+}
+
 // ── Cavos (optional) ────────────────────────────────────────────────────────
 if (env.PUBLIC_CAVOS_APP_ID) {
 	;["TESTNET", "PUBLIC"].includes(network)

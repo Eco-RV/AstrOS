@@ -820,6 +820,123 @@
 	justify-content: flex-end;
 }
 
+/* ── Photo picker ──────────────────────────────────────────────────────── */
+
+.photoPicker {
+	display: flex;
+	align-items: center;
+	gap: 1.25rem;
+}
+
+.photoDrop {
+	position: relative;
+	flex-shrink: 0;
+	display: grid;
+	place-items: center;
+	width: 132px;
+	height: 132px;
+	min-height: 0;
+	padding: 0;
+	border-radius: 50%;
+	border: 2px dashed rgba(155, 123, 255, 0.6);
+	background: rgba(155, 123, 255, 0.08);
+	overflow: hidden;
+}
+
+.photoDrop:hover:not(:disabled) {
+	background: rgba(155, 123, 255, 0.16);
+	border-color: var(--color-accent);
+}
+
+.photoDrop img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.photoEmpty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.3rem;
+	color: var(--color-text-muted);
+	font-size: 0.8rem;
+	line-height: 1.25;
+}
+
+.photoEmpty svg {
+	color: var(--color-accent);
+}
+
+.photo_done {
+	border: 3px solid var(--color-success);
+}
+
+.photo_error {
+	border-style: solid;
+	border-color: var(--color-error);
+}
+
+/* Spinning orbit while the photo goes to IPFS. */
+.photo_uploading::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	border: 3px solid transparent;
+	border-top-color: var(--color-star);
+	background: rgba(11, 8, 32, 0.35);
+	animation: spin 1s linear infinite;
+}
+
+.photo_uploading {
+	opacity: 1 !important;
+}
+
+.photoStatus {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.4rem;
+	min-width: 0;
+	color: var(--color-text-muted);
+	font-size: 0.85rem;
+}
+
+.photoStatus small {
+	line-height: 1.4;
+}
+
+.photoStatus a {
+	color: var(--color-text-muted);
+	text-decoration: none;
+}
+
+.photoStatus button {
+	min-height: 36px;
+	padding: 0.3rem 0.9rem;
+	font-size: 0.85rem;
+}
+
+.uploading {
+	color: var(--color-star);
+	animation: twinkle 1.2s ease-in-out infinite;
+}
+
+.uploaded {
+	color: var(--color-success);
+}
+
+.advanced summary {
+	cursor: pointer;
+	color: var(--color-text-muted);
+	font-size: 0.85rem;
+}
+
+.advanced label {
+	margin-top: 0.6rem;
+}
+
 /* ── Constellation ─────────────────────────────────────────────────────── */
 
 .stats {

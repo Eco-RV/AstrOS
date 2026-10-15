@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import styles from "./attendance.module.css"
 import { BadgeArt } from "./BadgeArt"
+import { PhotoPicker } from "./PhotoPicker"
 import { formatDate, useAttendanceWrite } from "./useAttendance"
 
 /** Date → value for <input type="datetime-local"> (local time). */
@@ -46,6 +47,8 @@ export const CreateEventForm = () => {
 	const [description, setDescription] = useState("")
 	const [location, setLocation] = useState("")
 	const [imageUrl, setImageUrl] = useState("")
+	const [photoPreview, setPhotoPreview] = useState("")
+	const [uploading, setUploading] = useState(false)
 	const [preset, setPreset] = useState<Preset>("now")
 	const [startsAt, setStartsAt] = useState(() => toLocalInput(new Date()))
 	const [endsAt, setEndsAt] = useState(() =>
@@ -94,7 +97,30 @@ export const CreateEventForm = () => {
 		<form className={styles.createLayout} onSubmit={(e) => void submit(e)}>
 			<div className={`card ${styles.form}`}>
 				<fieldset className={styles.fieldset}>
-					<legend>1 · ¿Qué evento es?</legend>
+					<legend>1 · Foto de la insignia</legend>
+					<PhotoPicker
+						onChange={setImageUrl}
+						onPreview={setPhotoPreview}
+						onBusyChange={setUploading}
+					/>
+					{!photoPreview && (
+						<details className={styles.advanced}>
+							<summary>¿Ya tienes la imagen en internet?</summary>
+							<label>
+								Enlace de la imagen
+								<input
+									maxLength={200}
+									placeholder="https://… o ipfs://…"
+									value={imageUrl}
+									onChange={(e) => setImageUrl(e.target.value)}
+								/>
+							</label>
+						</details>
+					)}
+				</fieldset>
+
+				<fieldset className={styles.fieldset}>
+					<legend>2 · ¿Qué evento es?</legend>
 					<label>
 						Nombre *
 						<input
@@ -117,30 +143,19 @@ export const CreateEventForm = () => {
 						/>
 						<span className={styles.counter}>{description.length}/280</span>
 					</label>
-					<div className={styles.row}>
-						<label>
-							Lugar
-							<input
-								maxLength={100}
-								placeholder="Ciudad, sede o «En línea»"
-								value={location}
-								onChange={(e) => setLocation(e.target.value)}
-							/>
-						</label>
-						<label>
-							Imagen de la insignia
-							<input
-								maxLength={200}
-								placeholder="https://… o ipfs://… (opcional)"
-								value={imageUrl}
-								onChange={(e) => setImageUrl(e.target.value)}
-							/>
-						</label>
-					</div>
+					<label>
+						Lugar
+						<input
+							maxLength={100}
+							placeholder="Ciudad, sede o «En línea»"
+							value={location}
+							onChange={(e) => setLocation(e.target.value)}
+						/>
+					</label>
 				</fieldset>
 
 				<fieldset className={styles.fieldset}>
-					<legend>2 · ¿Cuándo se puede reclamar?</legend>
+					<legend>3 · ¿Cuándo se puede reclamar?</legend>
 					<div className={styles.presets}>
 						{PRESETS.map((p) => (
 							<button
@@ -201,9 +216,13 @@ export const CreateEventForm = () => {
 					<button
 						type="submit"
 						className={`btn-primary ${styles.claimButton}`}
-						disabled={pending}
+						disabled={pending || uploading}
 					>
-						{pending ? "Firmando en tu wallet…" : "✦ Crear evento"}
+						{pending
+							? "Firmando en tu wallet…"
+							: uploading
+								? "Subiendo la foto…"
+								: "✦ Crear evento"}
 					</button>
 				</div>
 			</div>
@@ -212,7 +231,7 @@ export const CreateEventForm = () => {
 				<BadgeArt
 					eventId={name.length}
 					name={name || "?"}
-					imageUrl={imageUrl.trim()}
+					imageUrl={photoPreview || imageUrl.trim()}
 					size={120}
 					orbit
 				/>

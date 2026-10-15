@@ -33,8 +33,12 @@ mientras se desarrolla). Flujo completo en [docs/FLUJO.md](docs/FLUJO.md).
 
 ### Imágenes
 
-- Las imágenes `ipfs://<CID>` se muestran con `PUBLIC_IPFS_GATEWAY`. (La subida
-  de fotos a IPFS con Pinata viene en esta misma versión, pendiente.)
+- Crear evento empieza con la foto: cámara o galería, se comprime en el
+  navegador (máx. 800 px, JPEG) y se sube al instante a IPFS público con Pinata
+  mediante la función `api/upload.mjs`. En el contrato se guarda `ipfs://<CID>`.
+- Las imágenes `ipfs://<CID>` se muestran con `PUBLIC_IPFS_GATEWAY`.
+- Sigue disponible pegar un enlace `https://` o `ipfs://` en lugar de subir
+  foto.
 
 ### Limpieza
 
@@ -50,8 +54,9 @@ mientras se desarrolla). Flujo completo en [docs/FLUJO.md](docs/FLUJO.md).
 
 ### Configuración
 
-- Vercel (Production y Preview): `PUBLIC_FEATURED_EVENT_ID` (opcional) y
-  `PUBLIC_IPFS_GATEWAY`.
+- Vercel (Production y Preview): `PUBLIC_FEATURED_EVENT_ID` (opcional),
+  `PUBLIC_IPFS_GATEWAY` y el secreto `PINATA_JWT` (sin prefijo `PUBLIC_`).
+- Local: `PINATA_JWT` en `app/.env.local` para probar la subida de fotos.
 
 ## 1.0.0 — 2026-10-14
 

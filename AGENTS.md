@@ -55,7 +55,9 @@ verified, version-specific facts that differ from your training data.
 4. **Never** ask for, print, store or commit secret keys (`S…`) or seed phrases.
    Users sign with their wallet; the agent never signs for them. `app/.env` is
    different: it only holds public config (`PUBLIC_*` values are public by
-   design), so you may read and edit it, but never commit it.
+   design), so you may read and edit it, but never commit it. Server-only
+   secrets (`PINATA_JWT` for `api/upload.mjs`) go in `app/.env.local`: never
+   read, print or move them, and never give them a `PUBLIC_` prefix.
 5. Don't edit generated code: `app-lib/clients/*` (Scaffold regenerates it) and
    `.agents/skills/trustless-work/references/official/` (vendored).
 6. Scaffold config is **v1** (`environments.toml`). Don't migrate to

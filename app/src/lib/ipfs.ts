@@ -11,5 +11,6 @@ const gateway = (
 export const imageSrc = (url?: string) => {
 	if (!url) return undefined
 	if (url.startsWith("ipfs://")) return `${gateway}/ipfs/${url.slice(7)}`
-	return /^https:\/\//.test(url) ? url : undefined
+	// blob: = local preview of a photo that is still uploading.
+	return /^(https|blob):/.test(url) ? url : undefined
 }
