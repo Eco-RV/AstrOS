@@ -134,6 +134,7 @@ app-lib/                  network env, wallet kit, friendbot, events (shared TS 
 app-lib/clients/          GENERATED contract clients (gitignored)
 scripts/                  doctor, agents-sync, dev-guard, ci-clients
 docs/AGENT-SETUP.md       per-agent setup and optional MCP servers
+docs/handoff/finance-os/  handoff kit to build the family USDC savings ("Constelación familiar") in Finance OS
 ```
 
 ## Code conventions
