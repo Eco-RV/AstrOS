@@ -1,0 +1,1196 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Logos AstrOS</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				--night: #0b0820;
+				--nebula: #1a1438;
+				--ink: #f2efff;
+				--muted: #a69fcc;
+				--aurora: linear-gradient(90deg, #7b61ff, #c86dd7 55%, #3dd6f5);
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				padding: 32px 16px 64px;
+				background:
+					radial-gradient(1px 1px at 20% 30%, #fff8, transparent),
+					radial-gradient(1px 1px at 70% 10%, #fff6, transparent),
+					radial-gradient(1.5px 1.5px at 85% 60%, #fff7, transparent),
+					radial-gradient(1px 1px at 40% 80%, #fff5, transparent),
+					radial-gradient(900px 500px at 80% -10%, #7b61ff33, transparent),
+					var(--night);
+				color: var(--ink);
+				font-family: Inter, system-ui, sans-serif;
+			}
+			.wrap {
+				max-width: 1040px;
+				margin: 0 auto;
+			}
+			h1,
+			h2 {
+				font-family: "Space Grotesk", sans-serif;
+			}
+			h1 {
+				font-size: clamp(28px, 6vw, 44px);
+				margin: 0 0 4px;
+			}
+			h1 span {
+				background: var(--aurora);
+				-webkit-background-clip: text;
+				background-clip: text;
+				color: transparent;
+			}
+			p.lead {
+				color: var(--muted);
+				margin: 0 0 32px;
+			}
+			.grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+				gap: 16px;
+			}
+			.card {
+				background: var(--nebula);
+				border: 1px solid #ffffff1a;
+				border-radius: 20px;
+				overflow: hidden;
+			}
+			.stage {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+			}
+			.stage div {
+				display: grid;
+				place-items: center;
+				padding: 28px 12px;
+			}
+			.stage .dark {
+				background: var(--night);
+			}
+			.stage .light {
+				background: #f6f4ff;
+				color: var(--night);
+			}
+			.stage svg:not(.wm) {
+				width: 112px;
+				height: 112px;
+			}
+			.stage .wm {
+				width: 100%;
+				max-width: 200px;
+				height: auto;
+			}
+			.meta {
+				padding: 16px 18px 20px;
+			}
+			.meta h2 {
+				margin: 0 0 4px;
+				font-size: 20px;
+			}
+			.meta p {
+				margin: 0;
+				color: var(--muted);
+				font-size: 14px;
+				line-height: 1.5;
+			}
+			.tag {
+				display: inline-block;
+				margin-top: 10px;
+				font-size: 12px;
+				padding: 3px 10px;
+				border-radius: 99px;
+				background: #ffd66b22;
+				color: #ffd66b;
+			}
+			section {
+				margin-top: 48px;
+			}
+			.sizes {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: flex-end;
+				gap: 24px;
+			}
+			.sizes figure {
+				margin: 0;
+				text-align: center;
+				color: var(--muted);
+				font-size: 12px;
+			}
+			.phone {
+				width: 260px;
+				max-width: 100%;
+				border-radius: 32px;
+				border: 1px solid #ffffff22;
+				background: var(--night);
+				padding: 14px;
+			}
+			.phone header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 6px 4px 14px;
+			}
+			.phone header svg {
+				height: 28px;
+			}
+			.phone .avatar {
+				width: 28px;
+				height: 28px;
+				border-radius: 50%;
+				background: var(--aurora);
+			}
+			.phone .hero {
+				border-radius: 18px;
+				padding: 16px;
+				background: linear-gradient(160deg, #7b61ff55, #3dd6f522);
+				font-family: "Space Grotesk", sans-serif;
+			}
+			.phone .tabs {
+				display: flex;
+				justify-content: space-around;
+				margin-top: 120px;
+				padding-top: 10px;
+				border-top: 1px solid #ffffff1a;
+				font-size: 11px;
+				color: var(--muted);
+			}
+			.phone .tabs b {
+				width: 40px;
+				height: 40px;
+				margin-top: -24px;
+				border-radius: 50%;
+				background: var(--aurora);
+				display: grid;
+				place-items: center;
+				color: #fff;
+				font-size: 22px;
+			}
+			.swatches {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+			}
+			.swatches div {
+				width: 120px;
+				border-radius: 14px;
+				overflow: hidden;
+				border: 1px solid #ffffff1a;
+				font-size: 12px;
+			}
+			.swatches i {
+				display: block;
+				height: 56px;
+			}
+			.swatches span {
+				display: block;
+				padding: 8px 10px;
+				color: var(--muted);
+			}
+			.orbit-spin {
+				animation: spin 6s linear infinite;
+			}
+			@keyframes spin {
+				to {
+					transform: rotate(360deg);
+				}
+			}
+			@media (prefers-reduced-motion: reduce) {
+				.orbit-spin {
+					animation: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrap">
+			<h1>Logos de <span>AstrOS</span></h1>
+			<p class="lead">
+				Propuestas para la 1.0.1 · cada evento es una estrella, tu colección es
+				tu constelación.
+			</p>
+
+			<div class="grid">
+				<article class="card">
+					<div class="stage">
+						<div class="dark">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 128 128"
+								role="img"
+								aria-label="AstrOS"
+							>
+								<defs>
+									<linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#241B4D" />
+										<stop offset="1" stop-color="#0B0820" />
+									</linearGradient>
+									<linearGradient id="au1" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#7B61FF" />
+										<stop offset=".55" stop-color="#C86DD7" />
+										<stop offset="1" stop-color="#3DD6F5" />
+									</linearGradient>
+								</defs>
+								<rect width="128" height="128" rx="28" fill="url(#bg1)" />
+								<g fill="#fff">
+									<circle cx="22" cy="30" r="1.6" opacity=".7" />
+									<circle cx="106" cy="22" r="2" opacity=".8" />
+									<circle cx="104" cy="110" r="1.5" opacity=".6" />
+									<circle cx="18" cy="96" r="1.2" opacity=".5" />
+								</g>
+								<g transform="rotate(-18 64 80)">
+									<path
+										d="M20 80 A44 13 0 0 1 108 80"
+										fill="none"
+										stroke="url(#au1)"
+										stroke-width="6"
+										opacity=".55"
+									/>
+								</g>
+								<path
+									d="M38 104 L64 40 L90 104"
+									fill="none"
+									stroke="#fff"
+									stroke-width="11"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								/>
+								<g transform="rotate(-18 64 80)">
+									<path
+										d="M20 80 A44 13 0 0 0 108 80"
+										fill="none"
+										stroke="url(#au1)"
+										stroke-width="6"
+										stroke-linecap="round"
+									/>
+								</g>
+								<path
+									d="M64 10 Q64 25 79 25 Q64 25 64 40 Q64 25 49 25 Q64 25 64 10Z"
+									fill="#FFD66B"
+								/>
+							</svg>
+						</div>
+						<div class="light">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 128 128"
+								role="img"
+								aria-label="AstrOS"
+							>
+								<defs>
+									<linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#241B4D" />
+										<stop offset="1" stop-color="#0B0820" />
+									</linearGradient>
+									<linearGradient id="au2" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#7B61FF" />
+										<stop offset=".55" stop-color="#C86DD7" />
+										<stop offset="1" stop-color="#3DD6F5" />
+									</linearGradient>
+								</defs>
+								<rect width="128" height="128" rx="28" fill="url(#bg2)" />
+								<g fill="#fff">
+									<circle cx="22" cy="30" r="1.6" opacity=".7" />
+									<circle cx="106" cy="22" r="2" opacity=".8" />
+									<circle cx="104" cy="110" r="1.5" opacity=".6" />
+									<circle cx="18" cy="96" r="1.2" opacity=".5" />
+								</g>
+								<g transform="rotate(-18 64 80)">
+									<path
+										d="M20 80 A44 13 0 0 1 108 80"
+										fill="none"
+										stroke="url(#au2)"
+										stroke-width="6"
+										opacity=".55"
+									/>
+								</g>
+								<path
+									d="M38 104 L64 40 L90 104"
+									fill="none"
+									stroke="#fff"
+									stroke-width="11"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								/>
+								<g transform="rotate(-18 64 80)">
+									<path
+										d="M20 80 A44 13 0 0 0 108 80"
+										fill="none"
+										stroke="url(#au2)"
+										stroke-width="6"
+										stroke-linecap="round"
+									/>
+								</g>
+								<path
+									d="M64 10 Q64 25 79 25 Q64 25 64 40 Q64 25 49 25 Q64 25 64 10Z"
+									fill="#FFD66B"
+								/>
+							</svg>
+						</div>
+					</div>
+					<div class="meta">
+						<h2>1 · Órbita</h2>
+						<p>
+							Una “A” atravesada por una órbita, con la estrella-insignia en la
+							punta. Se lee bien en pequeño.
+						</p>
+					</div>
+				</article>
+				<article class="card">
+					<div class="stage">
+						<div class="dark">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 128 128"
+								role="img"
+								aria-label="AstrOS"
+							>
+								<defs>
+									<linearGradient id="bg3" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#241B4D" />
+										<stop offset="1" stop-color="#0B0820" />
+									</linearGradient>
+									<linearGradient id="au3" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#7B61FF" />
+										<stop offset=".55" stop-color="#C86DD7" />
+										<stop offset="1" stop-color="#3DD6F5" />
+									</linearGradient>
+								</defs>
+								<rect width="128" height="128" rx="28" fill="url(#bg3)" />
+								<g
+									fill="none"
+									stroke="url(#au3)"
+									stroke-width="3"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<path d="M30 104 L47 68 L64 30 L81 68 L98 104" />
+									<path d="M47 68 L81 68" stroke="#C86DD7" />
+								</g>
+								<g fill="#fff">
+									<circle cx="30" cy="104" r="5" />
+									<circle cx="98" cy="104" r="5" />
+									<circle cx="47" cy="68" r="6" />
+									<circle cx="81" cy="68" r="6" />
+								</g>
+								<g fill="#fff" opacity=".6">
+									<circle cx="20" cy="24" r="1.4" />
+									<circle cx="108" cy="36" r="1.8" />
+									<circle cx="64" cy="112" r="1.2" />
+								</g>
+								<path
+									d="M64 12 Q64 30 82 30 Q64 30 64 48 Q64 30 46 30 Q64 30 64 12Z"
+									fill="#FFD66B"
+								/>
+							</svg>
+						</div>
+						<div class="light">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 128 128"
+								role="img"
+								aria-label="AstrOS"
+							>
+								<defs>
+									<linearGradient id="bg4" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#241B4D" />
+										<stop offset="1" stop-color="#0B0820" />
+									</linearGradient>
+									<linearGradient id="au4" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#7B61FF" />
+										<stop offset=".55" stop-color="#C86DD7" />
+										<stop offset="1" stop-color="#3DD6F5" />
+									</linearGradient>
+								</defs>
+								<rect width="128" height="128" rx="28" fill="url(#bg4)" />
+								<g
+									fill="none"
+									stroke="url(#au4)"
+									stroke-width="3"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
+									<path d="M30 104 L47 68 L64 30 L81 68 L98 104" />
+									<path d="M47 68 L81 68" stroke="#C86DD7" />
+								</g>
+								<g fill="#fff">
+									<circle cx="30" cy="104" r="5" />
+									<circle cx="98" cy="104" r="5" />
+									<circle cx="47" cy="68" r="6" />
+									<circle cx="81" cy="68" r="6" />
+								</g>
+								<g fill="#fff" opacity=".6">
+									<circle cx="20" cy="24" r="1.4" />
+									<circle cx="108" cy="36" r="1.8" />
+									<circle cx="64" cy="112" r="1.2" />
+								</g>
+								<path
+									d="M64 12 Q64 30 82 30 Q64 30 64 48 Q64 30 46 30 Q64 30 64 12Z"
+									fill="#FFD66B"
+								/>
+							</svg>
+						</div>
+					</div>
+					<div class="meta">
+						<h2>2 · Constelación</h2>
+						<p>
+							Cinco estrellas unidas dibujan la “A”: cuenta la historia de la
+							app (tus insignias forman tu cielo).
+						</p>
+					</div>
+				</article>
+				<article class="card">
+					<div class="stage">
+						<div class="dark">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 128 128"
+								role="img"
+								aria-label="AstrOS"
+							>
+								<defs>
+									<linearGradient id="bg5" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#241B4D" />
+										<stop offset="1" stop-color="#0B0820" />
+									</linearGradient>
+									<linearGradient id="au5" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#7B61FF" />
+										<stop offset=".55" stop-color="#C86DD7" />
+										<stop offset="1" stop-color="#3DD6F5" />
+									</linearGradient>
+								</defs>
+								<circle cx="64" cy="64" r="56" fill="url(#au5)" />
+								<circle
+									cx="64"
+									cy="64"
+									r="58"
+									fill="none"
+									stroke="url(#au5)"
+									stroke-width="8"
+									stroke-dasharray="4.555 4.555"
+								/>
+								<circle cx="64" cy="64" r="47" fill="#0B0820" />
+								<circle
+									cx="64"
+									cy="64"
+									r="42"
+									fill="none"
+									stroke="#fff"
+									stroke-opacity=".15"
+									stroke-width="1.5"
+									stroke-dasharray="2 4"
+								/>
+								<g transform="rotate(-20 64 70)">
+									<path
+										d="M28 70 A36 10 0 0 1 100 70"
+										fill="none"
+										stroke="#FFD66B"
+										stroke-width="4"
+										opacity=".7"
+									/>
+									<circle cx="64" cy="70" r="20" fill="url(#au5)" />
+									<path
+										d="M28 70 A36 10 0 0 0 100 70"
+										fill="none"
+										stroke="#FFD66B"
+										stroke-width="4"
+										stroke-linecap="round"
+									/>
+								</g>
+								<path
+									d="M90 26 Q90 36 100 36 Q90 36 90 46 Q90 36 80 36 Q90 36 90 26Z"
+									fill="#fff"
+								/>
+								<g fill="#fff" opacity=".7">
+									<circle cx="40" cy="40" r="1.5" />
+									<circle cx="36" cy="88" r="1.2" />
+									<circle cx="94" cy="94" r="1.4" />
+								</g>
+							</svg>
+						</div>
+						<div class="light">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 128 128"
+								role="img"
+								aria-label="AstrOS"
+							>
+								<defs>
+									<linearGradient id="bg6" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#241B4D" />
+										<stop offset="1" stop-color="#0B0820" />
+									</linearGradient>
+									<linearGradient id="au6" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#7B61FF" />
+										<stop offset=".55" stop-color="#C86DD7" />
+										<stop offset="1" stop-color="#3DD6F5" />
+									</linearGradient>
+								</defs>
+								<circle cx="64" cy="64" r="56" fill="url(#au6)" />
+								<circle
+									cx="64"
+									cy="64"
+									r="58"
+									fill="none"
+									stroke="url(#au6)"
+									stroke-width="8"
+									stroke-dasharray="4.555 4.555"
+								/>
+								<circle cx="64" cy="64" r="47" fill="#0B0820" />
+								<circle
+									cx="64"
+									cy="64"
+									r="42"
+									fill="none"
+									stroke="#fff"
+									stroke-opacity=".15"
+									stroke-width="1.5"
+									stroke-dasharray="2 4"
+								/>
+								<g transform="rotate(-20 64 70)">
+									<path
+										d="M28 70 A36 10 0 0 1 100 70"
+										fill="none"
+										stroke="#FFD66B"
+										stroke-width="4"
+										opacity=".7"
+									/>
+									<circle cx="64" cy="70" r="20" fill="url(#au6)" />
+									<path
+										d="M28 70 A36 10 0 0 0 100 70"
+										fill="none"
+										stroke="#FFD66B"
+										stroke-width="4"
+										stroke-linecap="round"
+									/>
+								</g>
+								<path
+									d="M90 26 Q90 36 100 36 Q90 36 90 46 Q90 36 80 36 Q90 36 90 26Z"
+									fill="#fff"
+								/>
+								<g fill="#fff" opacity=".7">
+									<circle cx="40" cy="40" r="1.5" />
+									<circle cx="36" cy="88" r="1.2" />
+									<circle cx="94" cy="94" r="1.4" />
+								</g>
+							</svg>
+						</div>
+					</div>
+					<div class="meta">
+						<h2>3 · Sello</h2>
+						<p>
+							Insignia dentada con un planeta: es literalmente lo que reclamas.
+							Ideal para favicon, ícono de PWA y avatar.
+						</p>
+						<span class="tag">Recomendado como ícono</span>
+					</div>
+				</article>
+				<article class="card">
+					<div class="stage">
+						<div class="dark" style="color: #f2efff">
+							<svg
+								class="wm"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 244 96"
+								role="img"
+								aria-label="AstrOS"
+							>
+								<defs>
+									<linearGradient id="bgd" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#241B4D" />
+										<stop offset="1" stop-color="#0B0820" />
+									</linearGradient>
+									<linearGradient id="aud" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#7B61FF" />
+										<stop offset=".55" stop-color="#C86DD7" />
+										<stop offset="1" stop-color="#3DD6F5" />
+									</linearGradient>
+								</defs>
+								<g
+									font-family="'Space Grotesk', 'Inter', system-ui, sans-serif"
+									font-weight="700"
+									font-size="64"
+									fill="currentColor"
+								>
+									<text
+										x="4"
+										y="70"
+										textLength="116"
+										lengthAdjust="spacingAndGlyphs"
+									>
+										Astr
+									</text>
+									<text
+										x="200"
+										y="70"
+										textLength="38"
+										lengthAdjust="spacingAndGlyphs"
+									>
+										S
+									</text>
+								</g>
+								<g transform="rotate(-20 164 47)">
+									<path
+										d="M130 47 A34 9 0 0 1 198 47"
+										fill="none"
+										stroke="#FFD66B"
+										stroke-width="4"
+										opacity=".7"
+									/>
+									<circle cx="164" cy="47" r="22" fill="url(#aud)" />
+									<path
+										d="M130 47 A34 9 0 0 0 198 47"
+										fill="none"
+										stroke="#FFD66B"
+										stroke-width="4"
+										stroke-linecap="round"
+									/>
+								</g>
+								<path
+									d="M186 8 Q186 18 196 18 Q186 18 186 28 Q186 18 176 18 Q186 18 186 8Z"
+									fill="#FFD66B"
+								/>
+							</svg>
+						</div>
+						<div class="light">
+							<svg
+								class="wm"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 244 96"
+								role="img"
+								aria-label="AstrOS"
+							>
+								<defs>
+									<linearGradient id="bgl" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#241B4D" />
+										<stop offset="1" stop-color="#0B0820" />
+									</linearGradient>
+									<linearGradient id="aul" x1="0" y1="0" x2="1" y2="1">
+										<stop offset="0" stop-color="#7B61FF" />
+										<stop offset=".55" stop-color="#C86DD7" />
+										<stop offset="1" stop-color="#3DD6F5" />
+									</linearGradient>
+								</defs>
+								<g
+									font-family="'Space Grotesk', 'Inter', system-ui, sans-serif"
+									font-weight="700"
+									font-size="64"
+									fill="currentColor"
+								>
+									<text
+										x="4"
+										y="70"
+										textLength="116"
+										lengthAdjust="spacingAndGlyphs"
+									>
+										Astr
+									</text>
+									<text
+										x="200"
+										y="70"
+										textLength="38"
+										lengthAdjust="spacingAndGlyphs"
+									>
+										S
+									</text>
+								</g>
+								<g transform="rotate(-20 164 47)">
+									<path
+										d="M130 47 A34 9 0 0 1 198 47"
+										fill="none"
+										stroke="#FFD66B"
+										stroke-width="4"
+										opacity=".7"
+									/>
+									<circle cx="164" cy="47" r="22" fill="url(#aul)" />
+									<path
+										d="M130 47 A34 9 0 0 0 198 47"
+										fill="none"
+										stroke="#FFD66B"
+										stroke-width="4"
+										stroke-linecap="round"
+									/>
+								</g>
+								<path
+									d="M186 8 Q186 18 196 18 Q186 18 186 28 Q186 18 176 18 Q186 18 186 8Z"
+									fill="#FFD66B"
+								/>
+							</svg>
+						</div>
+					</div>
+					<div class="meta">
+						<h2>4 · Wordmark</h2>
+						<p>
+							“AstrOS” con la O como planeta anillado. En la app se usa inline
+							(<code>currentColor</code>) para que el texto siga el tema.
+						</p>
+						<span class="tag">Recomendado para el header</span>
+					</div>
+				</article>
+			</div>
+
+			<section>
+				<h2>El sello como ícono</h2>
+				<div class="sizes">
+					<figure>
+						<svg
+							width="180"
+							height="180"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 128 128"
+							role="img"
+							aria-label="AstrOS"
+						>
+							<defs>
+								<linearGradient id="bg7" x1="0" y1="0" x2="1" y2="1">
+									<stop offset="0" stop-color="#241B4D" />
+									<stop offset="1" stop-color="#0B0820" />
+								</linearGradient>
+								<linearGradient id="au7" x1="0" y1="0" x2="1" y2="1">
+									<stop offset="0" stop-color="#7B61FF" />
+									<stop offset=".55" stop-color="#C86DD7" />
+									<stop offset="1" stop-color="#3DD6F5" />
+								</linearGradient>
+							</defs>
+							<circle cx="64" cy="64" r="56" fill="url(#au7)" />
+							<circle
+								cx="64"
+								cy="64"
+								r="58"
+								fill="none"
+								stroke="url(#au7)"
+								stroke-width="8"
+								stroke-dasharray="4.555 4.555"
+							/>
+							<circle cx="64" cy="64" r="47" fill="#0B0820" />
+							<circle
+								cx="64"
+								cy="64"
+								r="42"
+								fill="none"
+								stroke="#fff"
+								stroke-opacity=".15"
+								stroke-width="1.5"
+								stroke-dasharray="2 4"
+							/>
+							<g transform="rotate(-20 64 70)">
+								<path
+									d="M28 70 A36 10 0 0 1 100 70"
+									fill="none"
+									stroke="#FFD66B"
+									stroke-width="4"
+									opacity=".7"
+								/>
+								<circle cx="64" cy="70" r="20" fill="url(#au7)" />
+								<path
+									d="M28 70 A36 10 0 0 0 100 70"
+									fill="none"
+									stroke="#FFD66B"
+									stroke-width="4"
+									stroke-linecap="round"
+								/>
+							</g>
+							<path
+								d="M90 26 Q90 36 100 36 Q90 36 90 46 Q90 36 80 36 Q90 36 90 26Z"
+								fill="#fff"
+							/>
+							<g fill="#fff" opacity=".7">
+								<circle cx="40" cy="40" r="1.5" />
+								<circle cx="36" cy="88" r="1.2" />
+								<circle cx="94" cy="94" r="1.4" />
+							</g>
+						</svg>
+						<figcaption>180 · iOS</figcaption>
+					</figure>
+					<figure>
+						<svg
+							width="64"
+							height="64"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 128 128"
+							role="img"
+							aria-label="AstrOS"
+						>
+							<defs>
+								<linearGradient id="bg8" x1="0" y1="0" x2="1" y2="1">
+									<stop offset="0" stop-color="#241B4D" />
+									<stop offset="1" stop-color="#0B0820" />
+								</linearGradient>
+								<linearGradient id="au8" x1="0" y1="0" x2="1" y2="1">
+									<stop offset="0" stop-color="#7B61FF" />
+									<stop offset=".55" stop-color="#C86DD7" />
+									<stop offset="1" stop-color="#3DD6F5" />
+								</linearGradient>
+							</defs>
+							<circle cx="64" cy="64" r="56" fill="url(#au8)" />
+							<circle
+								cx="64"
+								cy="64"
+								r="58"
+								fill="none"
+								stroke="url(#au8)"
+								stroke-width="8"
+								stroke-dasharray="4.555 4.555"
+							/>
+							<circle cx="64" cy="64" r="47" fill="#0B0820" />
+							<circle
+								cx="64"
+								cy="64"
+								r="42"
+								fill="none"
+								stroke="#fff"
+								stroke-opacity=".15"
+								stroke-width="1.5"
+								stroke-dasharray="2 4"
+							/>
+							<g transform="rotate(-20 64 70)">
+								<path
+									d="M28 70 A36 10 0 0 1 100 70"
+									fill="none"
+									stroke="#FFD66B"
+									stroke-width="4"
+									opacity=".7"
+								/>
+								<circle cx="64" cy="70" r="20" fill="url(#au8)" />
+								<path
+									d="M28 70 A36 10 0 0 0 100 70"
+									fill="none"
+									stroke="#FFD66B"
+									stroke-width="4"
+									stroke-linecap="round"
+								/>
+							</g>
+							<path
+								d="M90 26 Q90 36 100 36 Q90 36 90 46 Q90 36 80 36 Q90 36 90 26Z"
+								fill="#fff"
+							/>
+							<g fill="#fff" opacity=".7">
+								<circle cx="40" cy="40" r="1.5" />
+								<circle cx="36" cy="88" r="1.2" />
+								<circle cx="94" cy="94" r="1.4" />
+							</g>
+						</svg>
+						<figcaption>64</figcaption>
+					</figure>
+					<figure>
+						<svg
+							width="32"
+							height="32"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 128 128"
+							role="img"
+							aria-label="AstrOS"
+						>
+							<defs>
+								<linearGradient id="bg9" x1="0" y1="0" x2="1" y2="1">
+									<stop offset="0" stop-color="#241B4D" />
+									<stop offset="1" stop-color="#0B0820" />
+								</linearGradient>
+								<linearGradient id="au9" x1="0" y1="0" x2="1" y2="1">
+									<stop offset="0" stop-color="#7B61FF" />
+									<stop offset=".55" stop-color="#C86DD7" />
+									<stop offset="1" stop-color="#3DD6F5" />
+								</linearGradient>
+							</defs>
+							<circle cx="64" cy="64" r="56" fill="url(#au9)" />
+							<circle
+								cx="64"
+								cy="64"
+								r="58"
+								fill="none"
+								stroke="url(#au9)"
+								stroke-width="8"
+								stroke-dasharray="4.555 4.555"
+							/>
+							<circle cx="64" cy="64" r="47" fill="#0B0820" />
+							<circle
+								cx="64"
+								cy="64"
+								r="42"
+								fill="none"
+								stroke="#fff"
+								stroke-opacity=".15"
+								stroke-width="1.5"
+								stroke-dasharray="2 4"
+							/>
+							<g transform="rotate(-20 64 70)">
+								<path
+									d="M28 70 A36 10 0 0 1 100 70"
+									fill="none"
+									stroke="#FFD66B"
+									stroke-width="4"
+									opacity=".7"
+								/>
+								<circle cx="64" cy="70" r="20" fill="url(#au9)" />
+								<path
+									d="M28 70 A36 10 0 0 0 100 70"
+									fill="none"
+									stroke="#FFD66B"
+									stroke-width="4"
+									stroke-linecap="round"
+								/>
+							</g>
+							<path
+								d="M90 26 Q90 36 100 36 Q90 36 90 46 Q90 36 80 36 Q90 36 90 26Z"
+								fill="#fff"
+							/>
+							<g fill="#fff" opacity=".7">
+								<circle cx="40" cy="40" r="1.5" />
+								<circle cx="36" cy="88" r="1.2" />
+								<circle cx="94" cy="94" r="1.4" />
+							</g>
+						</svg>
+						<figcaption>32</figcaption>
+					</figure>
+					<figure>
+						<svg
+							width="16"
+							height="16"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 128 128"
+							role="img"
+							aria-label="AstrOS"
+						>
+							<defs>
+								<linearGradient id="bg10" x1="0" y1="0" x2="1" y2="1">
+									<stop offset="0" stop-color="#241B4D" />
+									<stop offset="1" stop-color="#0B0820" />
+								</linearGradient>
+								<linearGradient id="au10" x1="0" y1="0" x2="1" y2="1">
+									<stop offset="0" stop-color="#7B61FF" />
+									<stop offset=".55" stop-color="#C86DD7" />
+									<stop offset="1" stop-color="#3DD6F5" />
+								</linearGradient>
+							</defs>
+							<circle cx="64" cy="64" r="56" fill="url(#au10)" />
+							<circle
+								cx="64"
+								cy="64"
+								r="58"
+								fill="none"
+								stroke="url(#au10)"
+								stroke-width="8"
+								stroke-dasharray="4.555 4.555"
+							/>
+							<circle cx="64" cy="64" r="47" fill="#0B0820" />
+							<circle
+								cx="64"
+								cy="64"
+								r="42"
+								fill="none"
+								stroke="#fff"
+								stroke-opacity=".15"
+								stroke-width="1.5"
+								stroke-dasharray="2 4"
+							/>
+							<g transform="rotate(-20 64 70)">
+								<path
+									d="M28 70 A36 10 0 0 1 100 70"
+									fill="none"
+									stroke="#FFD66B"
+									stroke-width="4"
+									opacity=".7"
+								/>
+								<circle cx="64" cy="70" r="20" fill="url(#au10)" />
+								<path
+									d="M28 70 A36 10 0 0 0 100 70"
+									fill="none"
+									stroke="#FFD66B"
+									stroke-width="4"
+									stroke-linecap="round"
+								/>
+							</g>
+							<path
+								d="M90 26 Q90 36 100 36 Q90 36 90 46 Q90 36 80 36 Q90 36 90 26Z"
+								fill="#fff"
+							/>
+							<g fill="#fff" opacity=".7">
+								<circle cx="40" cy="40" r="1.5" />
+								<circle cx="36" cy="88" r="1.2" />
+								<circle cx="94" cy="94" r="1.4" />
+							</g>
+						</svg>
+						<figcaption>16 · favicon</figcaption>
+					</figure>
+					<figure>
+						<svg
+							class="orbit-spin"
+							width="64"
+							height="64"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 128 128"
+							role="img"
+							aria-label="AstrOS"
+						>
+							<defs>
+								<linearGradient id="bg11" x1="0" y1="0" x2="1" y2="1">
+									<stop offset="0" stop-color="#241B4D" />
+									<stop offset="1" stop-color="#0B0820" />
+								</linearGradient>
+								<linearGradient id="au11" x1="0" y1="0" x2="1" y2="1">
+									<stop offset="0" stop-color="#7B61FF" />
+									<stop offset=".55" stop-color="#C86DD7" />
+									<stop offset="1" stop-color="#3DD6F5" />
+								</linearGradient>
+							</defs>
+							<circle cx="64" cy="64" r="56" fill="url(#au11)" />
+							<circle
+								cx="64"
+								cy="64"
+								r="58"
+								fill="none"
+								stroke="url(#au11)"
+								stroke-width="8"
+								stroke-dasharray="4.555 4.555"
+							/>
+							<circle cx="64" cy="64" r="47" fill="#0B0820" />
+							<circle
+								cx="64"
+								cy="64"
+								r="42"
+								fill="none"
+								stroke="#fff"
+								stroke-opacity=".15"
+								stroke-width="1.5"
+								stroke-dasharray="2 4"
+							/>
+							<g transform="rotate(-20 64 70)">
+								<path
+									d="M28 70 A36 10 0 0 1 100 70"
+									fill="none"
+									stroke="#FFD66B"
+									stroke-width="4"
+									opacity=".7"
+								/>
+								<circle cx="64" cy="70" r="20" fill="url(#au11)" />
+								<path
+									d="M28 70 A36 10 0 0 0 100 70"
+									fill="none"
+									stroke="#FFD66B"
+									stroke-width="4"
+									stroke-linecap="round"
+								/>
+							</g>
+							<path
+								d="M90 26 Q90 36 100 36 Q90 36 90 46 Q90 36 80 36 Q90 36 90 26Z"
+								fill="#fff"
+							/>
+							<g fill="#fff" opacity=".7">
+								<circle cx="40" cy="40" r="1.5" />
+								<circle cx="36" cy="88" r="1.2" />
+								<circle cx="94" cy="94" r="1.4" />
+							</g>
+						</svg>
+						<figcaption>cargando</figcaption>
+					</figure>
+				</div>
+			</section>
+
+			<section>
+				<h2>En el móvil</h2>
+				<div class="phone">
+					<header>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 128 128"
+							role="img"
+							aria-label="AstrOS"
+						>
+							<defs>
+								<linearGradient id="bg12" x1="0" y1="0" x2="1" y2="1">
+									<stop offset="0" stop-color="#241B4D" />
+									<stop offset="1" stop-color="#0B0820" />
+								</linearGradient>
+								<linearGradient id="au12" x1="0" y1="0" x2="1" y2="1">
+									<stop offset="0" stop-color="#7B61FF" />
+									<stop offset=".55" stop-color="#C86DD7" />
+									<stop offset="1" stop-color="#3DD6F5" />
+								</linearGradient>
+							</defs>
+							<rect width="128" height="128" rx="28" fill="url(#bg12)" />
+							<g fill="#fff">
+								<circle cx="22" cy="30" r="1.6" opacity=".7" />
+								<circle cx="106" cy="22" r="2" opacity=".8" />
+								<circle cx="104" cy="110" r="1.5" opacity=".6" />
+								<circle cx="18" cy="96" r="1.2" opacity=".5" />
+							</g>
+							<g transform="rotate(-18 64 80)">
+								<path
+									d="M20 80 A44 13 0 0 1 108 80"
+									fill="none"
+									stroke="url(#au12)"
+									stroke-width="6"
+									opacity=".55"
+								/>
+							</g>
+							<path
+								d="M38 104 L64 40 L90 104"
+								fill="none"
+								stroke="#fff"
+								stroke-width="11"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							/>
+							<g transform="rotate(-18 64 80)">
+								<path
+									d="M20 80 A44 13 0 0 0 108 80"
+									fill="none"
+									stroke="url(#au12)"
+									stroke-width="6"
+									stroke-linecap="round"
+								/>
+							</g>
+							<path
+								d="M64 10 Q64 25 79 25 Q64 25 64 40 Q64 25 49 25 Q64 25 64 10Z"
+								fill="#FFD66B"
+							/>
+						</svg>
+						<div class="avatar"></div>
+					</header>
+					<div class="hero">
+						<small style="color: var(--muted)">Misión 1 de 3</small>
+						<div style="font-size: 20px; font-weight: 700; margin-top: 4px">
+							Reclama tu primera estrella ✦
+						</div>
+					</div>
+					<nav class="tabs">
+						<span>Eventos</span><b>＋</b><span>Mi constelación</span>
+					</nav>
+				</div>
+			</section>
+
+			<section>
+				<h2>Paleta</h2>
+				<div class="swatches">
+					<div>
+						<i style="background: #0b0820"></i><span>Noche #0B0820</span>
+					</div>
+					<div>
+						<i style="background: #1a1438"></i><span>Nebulosa #1A1438</span>
+					</div>
+					<div>
+						<i style="background: var(--aurora)"></i
+						><span>Aurora 7B61FF→3DD6F5</span>
+					</div>
+					<div>
+						<i style="background: #ffd66b"></i><span>Estrella #FFD66B</span>
+					</div>
+					<div>
+						<i style="background: #3ddc97"></i><span>Éxito #3DDC97</span>
+					</div>
+				</div>
+			</section>
+		</div>
+	</body>
+</html>

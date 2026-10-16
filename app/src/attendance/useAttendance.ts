@@ -61,9 +61,16 @@ export const useLatestEvents = () =>
 		queryFn: async () => (await attendance.latest_events({ limit: 50 })).result,
 	})
 
-export const useEvent = (eventId: number) =>
+/** `refetchInterval` (ms) keeps it live, e.g. on the projector screen. */
+export const useEvent = (
+	eventId: number,
+	enabled = true,
+	refetchInterval?: number,
+) =>
 	useQuery({
 		queryKey: [KEY, "event", eventId],
+		enabled: enabled && Number.isInteger(eventId) && eventId >= 0,
+		refetchInterval,
 		queryFn: async () => {
 			const r = (await attendance.get_event({ event_id: eventId })).result
 			if (r.isErr()) throw new Error(r.unwrapErr().message)
@@ -103,7 +110,7 @@ interface ContractTx<T> {
 function friendlyError(e: unknown): string {
 	const msg = errorMessage(e)
 	if (/account not found|resource missing|not found: .*account/i.test(msg))
-		return "Tu cuenta todavía no existe en testnet: pulsa «Fondos de prueba» arriba y vuelve a intentarlo."
+		return "Tu cuenta todavía no tiene XLM de prueba: espera a que termine la carga (o pídelos desde tu perfil) y vuelve a intentarlo."
 	if (/rejected|declined|cancel/i.test(msg)) return "Cancelaste la firma."
 	return msg
 }

@@ -48,19 +48,22 @@ ahora; mainnet solo con decisión explícita.
   SDK de JS), según el ID de las variables de entorno.
 - Variables en _Project → Settings → Environment Variables_:
 
-| Variable                            | Production                                                 | Preview                                                    |
-| ----------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------- |
-| `PUBLIC_STELLAR_NETWORK`            | `TESTNET`                                                  | `TESTNET`                                                  |
-| `PUBLIC_STELLAR_NETWORK_PASSPHRASE` | `Test SDF Network ; September 2015`                        | igual                                                      |
-| `PUBLIC_STELLAR_RPC_URL`            | `https://soroban-testnet.stellar.org`                      | igual                                                      |
-| `PUBLIC_STELLAR_HORIZON_URL`        | `https://horizon-testnet.stellar.org`                      | igual                                                      |
-| `PUBLIC_CAVOS_APP_ID`               | el App ID público (el mismo de `app/.env`)                 | igual                                                      |
-| `PUBLIC_CAVOS_ENVIRONMENT`          | `development`                                              | `development`                                              |
-| `PUBLIC_ATTENDANCE_CONTRACT_ID`     | `CAJ4FV5EEP7SFCXLSCOLTVWL6F3ZM34SIDDNR6XGR7FQSTPNF3QIJCFD` | `CBYKEFCNBPQW3G2XABSKYBOGV4VAOS7QPXM3QEUXVH4T4CZECC72YSAU` |
-| `PUBLIC_REPUTATION_CONTRACT_ID`     | `CDJDECLWXATHQ7CAYM2BDMRE2XJ4N6EV74MQHP3FMVCCILNI4DOUUNVW` | `CAIDTMGHVR2NG33A32AGALDFCXQS4JKF5DVJNMOSSP2C4TGRJ55RYDUI` |
+| Variable                            | Production                                                     | Preview                                                    |
+| ----------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------- |
+| `PUBLIC_STELLAR_NETWORK`            | `TESTNET`                                                      | `TESTNET`                                                  |
+| `PUBLIC_STELLAR_NETWORK_PASSPHRASE` | `Test SDF Network ; September 2015`                            | igual                                                      |
+| `PUBLIC_STELLAR_RPC_URL`            | `https://soroban-testnet.stellar.org`                          | igual                                                      |
+| `PUBLIC_STELLAR_HORIZON_URL`        | `https://horizon-testnet.stellar.org`                          | igual                                                      |
+| `PUBLIC_CAVOS_APP_ID`               | el App ID público (el mismo de `app/.env`)                     | igual                                                      |
+| `PUBLIC_CAVOS_ENVIRONMENT`          | `development`                                                  | `development`                                              |
+| `PUBLIC_ATTENDANCE_CONTRACT_ID`     | `CAJ4FV5EEP7SFCXLSCOLTVWL6F3ZM34SIDDNR6XGR7FQSTPNF3QIJCFD`     | `CBYKEFCNBPQW3G2XABSKYBOGV4VAOS7QPXM3QEUXVH4T4CZECC72YSAU` |
+| `PUBLIC_FEATURED_EVENT_ID`          | id del evento destacado (opcional)                             | id en staging (opcional)                                   |
+| `PUBLIC_IPFS_GATEWAY`               | gateway dedicado de Pinata (`https://<nombre>.mypinata.cloud`) | igual                                                      |
+| `PINATA_JWT` (**secreto**)          | JWT de Pinata con permiso _Files: Write_                       | igual                                                      |
 
 Nunca una clave `cav_…` ni una clave secreta `S…`: todo `PUBLIC_*` termina en el
-navegador.
+navegador. `PINATA_JWT` es la única variable secreta: **sin** prefijo `PUBLIC_`,
+la usa solo la función `api/upload.mjs` (en local va en `app/.env.local`).
 
 - **Cavos** solo acepta los orígenes registrados en su dashboard. Agrega el
   dominio de producción (`https://<proyecto>.vercel.app/`) y el de la rama

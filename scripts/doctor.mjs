@@ -27,7 +27,7 @@ const run = (cmd, opts = {}) => {
 	}
 }
 
-console.log("\nScaffold Stellar × Trustless Work: doctor\n")
+console.log("\nAstrOS: doctor\n")
 
 // ── Tools ───────────────────────────────────────────────────────────────────
 const nodeMajor = Number(process.versions.node.split(".")[0])
@@ -106,34 +106,18 @@ try {
 	fail(`Can't reach RPC ${rpcUrl}: ${e.message}`, "check your internet / proxy")
 }
 
-// ── Trustless Work ──────────────────────────────────────────────────────────
-const twKey = env.PUBLIC_TRUSTLESS_WORK_API_KEY
-const twUrl =
-	network === "PUBLIC"
-		? "https://api.trustlesswork.com"
-		: "https://dev.api.trustlesswork.com"
-if (!twKey) {
-	warn(
-		"No Trustless Work API key (only needed if your app uses escrows)",
-		"https://dapp.trustlesswork.com → connect wallet → Settings (fill 'Use case') → API Keys → Testnet → put it in app/.env as PUBLIC_TRUSTLESS_WORK_API_KEY",
-	)
-} else {
-	try {
-		const r = await fetch(
-			`${twUrl}/helper/get-escrows-by-signer?signer=GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5`,
-			{ headers: { "x-api-key": twKey } },
-		)
-		r.ok
-			? ok(`Trustless Work API key works (${twUrl})`)
-			: r.status === 401
-				? fail(
-						"Trustless Work API key rejected (401)",
-						"copy it again from https://dapp.trustlesswork.com (Testnet tab)",
-					)
-				: warn(`Trustless Work API answered ${r.status}`)
-	} catch (e) {
-		fail(`Can't reach ${twUrl}: ${e.message}`)
-	}
+// ── Photo uploads (Pinata, server-only secret) ─────────────────────────────
+{
+	const local = resolve(app, ".env.local")
+	const hasJwt =
+		Boolean(process.env.PINATA_JWT) ||
+		(existsSync(local) && /^PINATA_JWT=\S+/m.test(readFileSync(local, "utf8")))
+	hasJwt
+		? ok("PINATA_JWT set: event photos can be uploaded to IPFS")
+		: warn(
+				"No PINATA_JWT: creating events works, but photo uploads will fail",
+				"Pinata → API Keys → new key with Files: Write → put the JWT in app/.env.local as PINATA_JWT=… (never PUBLIC_*)",
+			)
 }
 
 // ── Cavos (optional) ────────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 {
   "name": "scaffold-stellar-agentic",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "npm start",
@@ -19,7 +19,6 @@
     "check": "npm run contracts:test && npm run fmt:check && npm run typecheck && npm run lint && npm run format:check",
     "prebuild": "node scripts/ensure-clients.mjs",
     "build": "npm run build --workspace app",
-    "tw:smoke": "node scripts/tw-smoke.mjs",
     "agents:sync": "node scripts/agents-sync.mjs",
     "agents:check": "node scripts/agents-sync.mjs --check",
     "postinstall": "node scripts/agents-sync.mjs"

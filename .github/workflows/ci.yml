@@ -30,7 +30,6 @@ jobs:
       PUBLIC_STELLAR_RPC_URL: https://soroban-testnet.stellar.org
       PUBLIC_STELLAR_HORIZON_URL: https://horizon-testnet.stellar.org
       PUBLIC_ATTENDANCE_CONTRACT_ID: CBYKEFCNBPQW3G2XABSKYBOGV4VAOS7QPXM3QEUXVH4T4CZECC72YSAU
-      PUBLIC_REPUTATION_CONTRACT_ID: CAIDTMGHVR2NG33A32AGALDFCXQS4JKF5DVJNMOSSP2C4TGRJ55RYDUI
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

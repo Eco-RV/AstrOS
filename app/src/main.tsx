@@ -7,7 +7,6 @@ import App from "./App.tsx"
 import { CavosRoot } from "./cavos/CavosRoot.tsx"
 import { NotificationProvider } from "./providers/NotificationProvider.tsx"
 import { WalletProvider } from "./providers/WalletProvider.tsx"
-import { TrustlessWorkProvider } from "./trustless/TrustlessWorkProvider.tsx"
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -21,19 +20,16 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById("root") as HTMLElement).render(
 	<StrictMode>
 		<NotificationProvider>
-			{/* Trustless Work escrow API client for the SDK hooks (src/trustless) */}
-			<TrustlessWorkProvider>
-				<QueryClientProvider client={queryClient}>
-					{/* Cavos embedded wallets (email/Google login), optional: src/cavos */}
-					<CavosRoot>
-						<WalletProvider>
-							<BrowserRouter>
-								<App />
-							</BrowserRouter>
-						</WalletProvider>
-					</CavosRoot>
-				</QueryClientProvider>
-			</TrustlessWorkProvider>
+			<QueryClientProvider client={queryClient}>
+				{/* Cavos embedded wallets (email/Google login), optional: src/cavos */}
+				<CavosRoot>
+					<WalletProvider>
+						<BrowserRouter>
+							<App />
+						</BrowserRouter>
+					</WalletProvider>
+				</CavosRoot>
+			</QueryClientProvider>
 		</NotificationProvider>
 	</StrictMode>,
 )

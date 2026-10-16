@@ -26,9 +26,10 @@ default = true
 # POAP-style attendance badges (contracts/attendance). `admin` can only upgrade the code.
 attendance = { client = true, constructor_args = "--admin me" }
 # `client = true` means: build -> deploy -> generate a TS client you can import as
-#   import { reputation } from "@stellar-scaffold/app-lib/clients"
+#   import { attendance } from "@stellar-scaffold/app-lib/clients"
 # The key must be the snake_case version of the crate `name` in its Cargo.toml.
-reputation = { client = true }
+# contracts/reputation is kept as a template only (the app stopped using it in 1.0.1).
+reputation = { client = false }
 
 # OpenZeppelin examples that ship with Scaffold: compiled as references but NOT
 # deployed. Scaffold tries to deploy every crate in contracts/, so any contract you
@@ -64,6 +65,7 @@ default = true
 
 [staging.contracts]
 attendance = { id = "CBYKEFCNBPQW3G2XABSKYBOGV4VAOS7QPXM3QEUXVH4T4CZECC72YSAU" }
+# Deployed in 1.0.0, no longer used by the app since 1.0.1 (data kept).
 reputation = { id = "CAIDTMGHVR2NG33A32AGALDFCXQS4JKF5DVJNMOSSP2C4TGRJ55RYDUI" }
 fungible_allowlist_example = { client = false }
 nft_enumerable_example = { client = false }
@@ -82,4 +84,5 @@ default = true
 
 [production.contracts]
 attendance = { id = "CAJ4FV5EEP7SFCXLSCOLTVWL6F3ZM34SIDDNR6XGR7FQSTPNF3QIJCFD" }
+# Deployed in 1.0.0, no longer used by the app since 1.0.1 (data kept).
 reputation = { id = "CDJDECLWXATHQ7CAYM2BDMRE2XJ4N6EV74MQHP3FMVCCILNI4DOUUNVW" }
