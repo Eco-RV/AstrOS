@@ -8,7 +8,7 @@ OS (Claude Code abierto en `C:\dev\FinanceOS`).
 ```text
 Quiero sumar a Finance OS una nueva lógica de negocio sobre la blockchain de Stellar: la "Constelación familiar", un sistema de ahorro familiar en USDC. Cada persona ve su ahorro y envía dinero a su familia; hay una bóveda familiar con una meta común donde retirar requiere la aprobación de otro familiar (para proteger a las personas mayores de estafas); y una academia que explica de forma simple qué es una wallet, la blockchain y USDC. La familia se ve como una constelación: cada persona es una estrella.
 
-Todo el conocimiento y el código base vienen de mi otro proyecto, AstrOS (dApp de Stellar ya publicada, v1.0.1). Está en esta misma computadora en C:\dev\AstrOS (si no puedes leerlo, clona https://github.com/Eco-RV/AstrOS y usa la etiqueta v1.0.1).
+Todo el conocimiento y el código base vienen de mi otro proyecto, AstrOS (dApp de Stellar ya publicada, v1.0.1). Está en esta misma computadora en C:\dev\AstrOS (si no puedes leerlo, clona https://github.com/Eco-RV/AstrOS en la rama dev_main).
 
 Antes de proponer nada, lee en este orden:
 1. C:\dev\AstrOS\docs\handoff\finance-os\README.md (índice de todo lo reutilizable: skills, reglas, código, marca)

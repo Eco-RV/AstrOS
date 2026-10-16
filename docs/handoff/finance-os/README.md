@@ -14,7 +14,8 @@ conocimiento, el código de wallets y contratos, y la marca.
 - **Misma computadora:** leer directo con las rutas `C:\dev\AstrOS\...` de esta
   guía.
 - **Otra máquina o la nube:** `git clone https://github.com/Eco-RV/AstrOS` y
-  `git checkout v1.0.1`. Las rutas de abajo son relativas a la raíz del repo.
+  `git checkout dev_main` (tiene todo lo de `v1.0.1` más este kit). Las rutas
+  de abajo son relativas a la raíz del repo.
 
 ## Orden de lectura
 
