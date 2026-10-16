@@ -3,7 +3,67 @@
 Formato: una sección por versión (`## x.y.z — AAAA-MM-DD`, o `— sin publicar`
 mientras se desarrolla). Flujo completo en [docs/FLUJO.md](docs/FLUJO.md).
 
-## 1.0.0 — sin publicar
+## 1.0.1 — 2026-10-15
+
+"Tu constelación": rediseño mobile first para la demo de clase. Plan completo en
+[docs/1.0.1/PLAN.md](docs/1.0.1/PLAN.md).
+
+### Diseño
+
+- Tema "cielo nocturno": nueva paleta, tipografías Space Grotesk + Inter, fondo
+  de estrellas con parallax y logo nuevo (sello + wordmark; propuestas en
+  `docs/1.0.1/logos/`).
+- Móvil: barra inferior con Eventos · ＋ Crear · Mi constelación, botón de
+  reclamar fijo al alcance del pulgar.
+- Inicio con "Tu misión" en 3 pasos (entra, reclama, crea) que se marcan solos,
+  evento destacado (`PUBLIC_FEATURED_EVENT_ID`) y filtros de eventos.
+- Reclamar una insignia dispara la animación "supernova" (con vibración en
+  móvil).
+- "Mi constelación": las insignias como estrellas unidas en orden de reclamo,
+  más vista de lista y estadísticas.
+- Crear evento en su propia página (`/crear`), con atajos de horario y vista
+  previa de la insignia.
+- Modo presentación (`/evento/:id/proyectar`, botón «Proyectar» para quien
+  organiza): QR gigante al evento, contador en vivo que rebota con cada
+  insignia, estrella fugaz por reclamo, últimas direcciones que reclamaron y los
+  3 pasos para la clase. Avisa si el QR apunta a localhost.
+- Menú de cuenta (avatar) con saldo, dirección, enlace al explorador y cierre de
+  sesión.
+
+### Cuentas
+
+- Las cuentas nuevas reciben XLM de prueba automáticamente (Friendbot) al
+  iniciar sesión, con aviso de progreso.
+
+### Imágenes
+
+- Crear evento empieza con la foto: cámara o galería, se comprime en el
+  navegador (máx. 800 px, JPEG) y se sube al instante a IPFS público con Pinata
+  mediante la función `api/upload.mjs`. En el contrato se guarda `ipfs://<CID>`.
+- Las imágenes `ipfs://<CID>` se muestran con `PUBLIC_IPFS_GATEWAY` (acepta el
+  dominio sin `https://`) y, si falla, con gateway.pinata.cloud e ipfs.io.
+- Sigue disponible pegar un enlace `https://` o `ipfs://` en lugar de subir
+  foto.
+
+### Limpieza
+
+- Se quitaron Escrow Studio (Trustless Work), el panel de reputación, la página
+  de contratos (Debug), `tw:smoke` y la dependencia `@trustless-work/escrow`.
+- La app ya no usa el contrato `reputation`; sus despliegues de staging y
+  producción quedan donde están (sin cambios). La variable
+  `PUBLIC_REPUTATION_CONTRACT_ID` ya no hace falta en Vercel.
+
+### Contratos
+
+- Sin cambios: no hay pasos en `Versionamiento/1.0.1/`.
+
+### Configuración
+
+- Vercel (Production y Preview): `PUBLIC_FEATURED_EVENT_ID` (opcional),
+  `PUBLIC_IPFS_GATEWAY` y el secreto `PINATA_JWT` (sin prefijo `PUBLIC_`).
+- Local: `PINATA_JWT` en `app/.env.local` para probar la subida de fotos.
+
+## 1.0.0 — 2026-10-14
 
 Primera versión publicada de AstrOS: insignias de asistencia estilo POAP en
 Stellar testnet.

@@ -1,0 +1,118 @@
+.banner {
+	position: fixed;
+	z-index: 40;
+	left: 50%;
+	bottom: 24px;
+	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	gap: 0.85rem;
+	width: min(420px, calc(100vw - 32px));
+	padding: 0.85rem 1rem;
+	border-radius: var(--radius-lg);
+	background: rgba(26, 20, 56, 0.95);
+	border: 1px solid var(--color-border-strong);
+	box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+	animation: rise 0.45s var(--ease-spring);
+}
+
+@media (max-width: 767px) {
+	.banner {
+		bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 12px);
+	}
+}
+
+.done {
+	border-color: rgba(61, 220, 151, 0.5);
+}
+
+.error {
+	border-color: rgba(255, 107, 138, 0.5);
+}
+
+.rocket {
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	background: var(--gradient-aurora);
+	font-size: 1.3rem;
+	color: #fff;
+	font-weight: 700;
+}
+
+.funding .rocket {
+	animation: shake 0.5s ease-in-out infinite;
+}
+
+.done .rocket {
+	background: var(--color-success);
+	animation: pop 0.5s var(--ease-spring);
+}
+
+.error .rocket {
+	background: var(--color-error);
+}
+
+.body {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+}
+
+.body small {
+	color: var(--color-text-muted);
+	line-height: 1.35;
+}
+
+.bar {
+	position: relative;
+	height: 4px;
+	margin-top: 0.5rem;
+	border-radius: 99px;
+	background: rgba(255, 255, 255, 0.1);
+	overflow: hidden;
+}
+
+.bar::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	width: 40%;
+	border-radius: inherit;
+	background: var(--gradient-aurora);
+	animation: fill 1.4s var(--ease-out) infinite;
+}
+
+@keyframes rise {
+	from {
+		opacity: 0;
+		transform: translate(-50%, 20px);
+	}
+}
+
+@keyframes shake {
+	50% {
+		transform: translateY(-3px) rotate(-6deg);
+	}
+}
+
+@keyframes pop {
+	from {
+		transform: scale(0.4);
+	}
+}
+
+@keyframes fill {
+	from {
+		transform: translateX(-100%);
+	}
+	to {
+		transform: translateX(260%);
+	}
+}
