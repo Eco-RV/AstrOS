@@ -17,10 +17,27 @@ const stars = (count: number, seed: number, color: string) => {
 }
 
 /**
- * Fixed night-sky background: three star layers that drift at different speeds
- * when scrolling (parallax) plus two soft aurora glows. Decorative only.
+ * Meteor shower: a handful of shooting stars, each on its own cycle (7–13 s)
+ * so they never cross in sync. Each one streaks during the first part of its
+ * cycle and stays hidden the rest of the time.
  */
-export const Starfield = () => {
+const meteors = (count: number, seed: number) => {
+	const r = rng(seed)
+	return Array.from({ length: count }, () => ({
+		top: Math.round(-10 + r() * 55),
+		left: Math.round(25 + r() * 85),
+		duration: (7 + r() * 6).toFixed(1),
+		delay: (r() * 9).toFixed(1),
+		length: Math.round(90 + r() * 110),
+	}))
+}
+
+/**
+ * Fixed night-sky background: three star layers that drift at different speeds
+ * when scrolling (parallax), two soft aurora glows and, unless `shower` is
+ * off, a slow meteor shower. Decorative only.
+ */
+export const Starfield = ({ shower = true }: { shower?: boolean }) => {
 	const ref = useRef<HTMLDivElement>(null)
 	const layers = useMemo(
 		() => [
@@ -30,6 +47,7 @@ export const Starfield = () => {
 		],
 		[],
 	)
+	const shootingStars = useMemo(() => meteors(7, 41), [])
 
 	useEffect(() => {
 		if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
@@ -58,6 +76,22 @@ export const Starfield = () => {
 					style={{ boxShadow: shadow }}
 				/>
 			))}
+			{shower &&
+				shootingStars.map((m, i) => (
+					<span
+						key={i}
+						className={styles.meteor}
+						style={
+							{
+								top: `${m.top}%`,
+								left: `${m.left}%`,
+								"--length": `${m.length}px`,
+								"--duration": `${m.duration}s`,
+								"--delay": `${m.delay}s`,
+							} as React.CSSProperties
+						}
+					/>
+				))}
 		</div>
 	)
 }

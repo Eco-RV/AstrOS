@@ -13,7 +13,6 @@ import {
 	useEvent,
 	useMyBadge,
 } from "../attendance/useAttendance"
-import { useCavosState } from "../cavos/context"
 import { useNotification } from "../hooks/useNotification"
 import { explorerContract } from "../lib/explorer"
 
@@ -23,7 +22,6 @@ const EventDetail = () => {
 	const { run, pending, address } = useAttendanceWrite()
 	const { data: myBadge } = useMyBadge(eventId, address)
 	const { addNotification } = useNotification()
-	const cavos = useCavosState()
 	const [celebrate, setCelebrate] = useState<number>()
 	const closeNova = useCallback(() => setCelebrate(undefined), [])
 
@@ -158,16 +156,6 @@ const EventDetail = () => {
 								<span className={styles.number}>#{myBadge.number}</span> ·{" "}
 								{formatDate(myBadge.claimed_at)}
 							</p>
-						) : !address ? (
-							status === "open" && cavos ? (
-								<button className={claimClass} onClick={cavos.signIn}>
-									Entra para reclamar tu insignia
-								</button>
-							) : (
-								<p className={styles.hint}>
-									Inicia sesión arriba para reclamar tu insignia.
-								</p>
-							)
 						) : status === "open" ? (
 							<button
 								className={claimClass}

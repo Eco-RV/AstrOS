@@ -1,12 +1,7 @@
 import styles from "../attendance/attendance.module.css"
 import { CreateEventForm } from "../attendance/CreateEventForm"
-import { useCavosState } from "../cavos/context"
-import { useWallet } from "../hooks/useWallet"
 
 const CreateEvent = () => {
-	const { address } = useWallet()
-	const cavos = useCavosState()
-
 	return (
 		<div className={styles.page}>
 			<section className={styles.hero}>
@@ -19,19 +14,7 @@ const CreateEvent = () => {
 				</p>
 			</section>
 
-			{address ? (
-				<CreateEventForm />
-			) : (
-				<div className={styles.empty}>
-					<strong>Primero entra a tu cuenta</strong>
-					<span>Así el evento queda a tu nombre como organizador.</span>
-					{cavos && (
-						<button className="btn-primary" onClick={cavos.signIn}>
-							Entrar con mi correo
-						</button>
-					)}
-				</div>
-			)}
+			<CreateEventForm />
 		</div>
 	)
 }

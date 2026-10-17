@@ -122,7 +122,7 @@ const Projector = () => {
 	if (error || (!event && !Number.isInteger(eventId)))
 		return (
 			<div className={styles.screen}>
-				<Starfield />
+				<Starfield shower={false} />
 				<p className={styles.problem}>
 					{error?.message ?? "Ese evento no existe."} <Link to="/">Volver</Link>
 				</p>
@@ -134,7 +134,7 @@ const Projector = () => {
 
 	return (
 		<div className={styles.screen}>
-			<Starfield />
+			<Starfield shower={false} />
 			{stars.map((s) => (
 				<span
 					key={s.id}

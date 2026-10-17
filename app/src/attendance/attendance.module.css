@@ -87,123 +87,6 @@
 	font-size: 1.02rem;
 }
 
-/* ── Mission (3 steps) ─────────────────────────────────────────────────── */
-
-.mission {
-	display: grid;
-	gap: 0.9rem;
-}
-
-.missionHead {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 1rem;
-}
-
-.missionHead h2 {
-	margin: 0;
-	font-size: 1.1rem;
-}
-
-.progress {
-	flex: 1;
-	max-width: 160px;
-	height: 6px;
-	border-radius: 99px;
-	background: rgba(255, 255, 255, 0.08);
-	overflow: hidden;
-}
-
-.progress span {
-	display: block;
-	height: 100%;
-	border-radius: inherit;
-	background: var(--gradient-aurora);
-	transition: width 0.8s var(--ease-out);
-}
-
-.steps {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 0.75rem;
-	margin: 0;
-	padding: 0;
-	list-style: none;
-}
-
-.step {
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	gap: 0.35rem;
-	padding: 0.9rem;
-	border-radius: var(--radius);
-	border: 1px solid var(--color-border);
-	background: rgba(255, 255, 255, 0.03);
-	transition:
-		border-color 0.3s,
-		background 0.3s;
-}
-
-.step strong {
-	font-size: 0.95rem;
-}
-
-.step small {
-	color: var(--color-text-muted);
-	line-height: 1.4;
-}
-
-.stepNum {
-	display: grid;
-	place-items: center;
-	width: 30px;
-	height: 30px;
-	border-radius: 50%;
-	border: 1px solid var(--color-border-strong);
-	font-family: var(--font-display);
-	font-weight: 700;
-	font-size: 0.9rem;
-}
-
-.step.current {
-	border-color: rgba(155, 123, 255, 0.6);
-	background: rgba(155, 123, 255, 0.1);
-	box-shadow: 0 0 24px rgba(123, 97, 255, 0.2);
-}
-
-.step.current .stepNum {
-	background: var(--gradient-aurora);
-	border-color: transparent;
-	color: #fff;
-}
-
-.step.done .stepNum {
-	background: var(--color-success);
-	border-color: transparent;
-	color: #0b0820;
-	animation: pop 0.5s var(--ease-spring);
-}
-
-.step.done strong {
-	text-decoration: line-through;
-	text-decoration-color: rgba(61, 220, 151, 0.7);
-	color: var(--color-text-muted);
-}
-
-.stepAction {
-	margin-top: auto;
-	padding-top: 0.35rem;
-}
-
-.stepAction a,
-.stepAction button {
-	font-size: 0.85rem;
-	min-height: 36px;
-	padding: 0.35rem 0.9rem;
-}
-
 .linkButton {
 	display: inline-flex;
 	align-items: center;
@@ -1092,35 +975,6 @@
 /* ── Mobile ────────────────────────────────────────────────────────────── */
 
 @media (max-width: 767px) {
-	.steps {
-		grid-template-columns: 1fr;
-	}
-
-	.step {
-		display: grid;
-		grid-template-columns: auto 1fr auto;
-		align-items: center;
-		column-gap: 0.75rem;
-		row-gap: 0;
-	}
-
-	.step .stepNum {
-		grid-column: 1;
-		grid-row: 1 / span 2;
-	}
-
-	.step strong,
-	.step small {
-		grid-column: 2;
-	}
-
-	.step .stepAction {
-		grid-column: 3;
-		grid-row: 1 / span 2;
-		margin: 0;
-		padding: 0;
-	}
-
 	.featured {
 		flex-direction: column;
 		text-align: center;
@@ -1172,5 +1026,33 @@
 
 	.submitBar button {
 		width: 100%;
+	}
+}
+
+/* Keyframes must live in each CSS Module: names are scoped per file. */
+@keyframes fade-up {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes twinkle {
+	0%,
+	100% {
+		opacity: 0.35;
+	}
+	50% {
+		opacity: 1;
 	}
 }
