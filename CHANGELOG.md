@@ -18,6 +18,9 @@ solo se entra con una wallet.
   wallet de extensión (Freighter, xBull, Lobstr…). Si la cuenta de Cavos
   necesita desbloquear este dispositivo, ofrece la passkey.
 - El modo presentación (`/evento/:id/proyectar`) sigue abierto sin login.
+- **Lluvia de estrellas** en el fondo de toda la app: estrellas fugaces suaves,
+  cada una a su ritmo (se apagan con "reducir movimiento" y en el modo
+  presentación, para no confundirlas con los reclamos).
 
 ### Limpieza
 
