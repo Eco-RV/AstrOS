@@ -3,7 +3,7 @@
 Formato: una sección por versión (`## x.y.z — AAAA-MM-DD`, o `— sin publicar`
 mientras se desarrolla). Flujo completo en [docs/FLUJO.md](docs/FLUJO.md).
 
-## 1.0.2 — sin publicar
+## 1.0.2 — 2026-10-17
 
 AstrOS vuelve a lo esencial: una app limpia de eventos e insignias, a la que
 solo se entra con una wallet.
