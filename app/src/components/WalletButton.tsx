@@ -1,5 +1,4 @@
 import {
-	connectWallet,
 	fundAccount,
 	profileModal,
 	shortAddress,
@@ -12,7 +11,7 @@ import { useWallet } from "../hooks/useWallet"
 import { explorerAccount } from "../lib/explorer"
 import styles from "./Account.module.css"
 
-/** Sign-in buttons when logged out; an avatar with an account menu when in. */
+/** Avatar with the account menu (balance, address, explorer, sign out). */
 export const WalletButton = () => {
 	const {
 		address,
@@ -27,47 +26,8 @@ export const WalletButton = () => {
 	const menu = useRef<HTMLDivElement>(null)
 	const [funding, startFunding] = useTransition()
 
-	// Signed in with Cavos on a browser that doesn't hold the wallet key yet.
-	if (!address && cavos?.needsDeviceApproval) {
-		return (
-			<div className="wallet-connected">
-				<button
-					className="wallet-primary"
-					onClick={() => void cavos.approveDevice()}
-				>
-					Desbloquear
-				</button>
-				<button className="btn-ghost" onClick={cavos.signOut}>
-					Salir
-				</button>
-			</div>
-		)
-	}
-
-	if (!address) {
-		return (
-			<div className="wallet-connected">
-				{cavos && (
-					<button
-						className="wallet-primary"
-						onClick={cavos.signIn}
-						disabled={cavos.isLoading}
-						title="Con tu correo o Google: crea tu cuenta de Stellar sin instalar nada (Cavos)"
-					>
-						{cavos.isLoading ? "Entrando…" : "Entrar"}
-					</button>
-				)}
-				<button
-					className={cavos ? styles.walletLink : undefined}
-					onClick={() => void connectWallet()}
-					disabled={isPending && !cavos}
-					title="Freighter, xBull, Lobstr… (extensión de wallet)"
-				>
-					{cavos ? "Wallet" : "Conectar wallet"}
-				</button>
-			</div>
-		)
-	}
+	// Signing in happens on the entry screen (src/entry/Login.tsx).
+	if (!address) return null
 
 	const label = cavos?.email && connector === "cavos" ? cavos.email : null
 	const initial = (label ?? "✦").charAt(0).toUpperCase()

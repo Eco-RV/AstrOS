@@ -358,3 +358,14 @@
 		align-items: center;
 	}
 }
+
+/* Keyframes must live in each CSS Module: names are scoped per file. */
+@keyframes twinkle {
+	0%,
+	100% {
+		opacity: 0.35;
+	}
+	50% {
+		opacity: 1;
+	}
+}

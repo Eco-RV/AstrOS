@@ -2,18 +2,15 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import styles from "../attendance/attendance.module.css"
 import { BadgeArt } from "../attendance/BadgeArt"
-import { Mission } from "../attendance/Mission"
 import {
 	type AttendanceEvent,
 	type EventStatus,
 	eventStatus,
 	formatDate,
 	STATUS_LABEL,
-	useBadgesOf,
 	useEvent,
 	useLatestEvents,
 } from "../attendance/useAttendance"
-import { useWallet } from "../hooks/useWallet"
 
 const featuredRaw = import.meta.env.PUBLIC_FEATURED_EVENT_ID as
 	| string
@@ -34,18 +31,13 @@ const matches = (filter: Filter, status: EventStatus) =>
 	(filter === "past" && status !== "open" && status !== "upcoming")
 
 const Events = () => {
-	const { address } = useWallet()
 	const { data: events, isLoading, error } = useLatestEvents()
-	const { data: badges } = useBadgesOf(address)
 	const { data: featured } = useEvent(
 		FEATURED_ID ?? -1,
 		FEATURED_ID !== undefined,
 	)
 	const [filter, setFilter] = useState<Filter>("all")
 
-	const hasEvent = Boolean(
-		address && events?.some((e) => e.organizer === address),
-	)
 	const visible = events?.filter((e) => matches(filter, eventStatus(e))) ?? []
 
 	return (
@@ -61,13 +53,6 @@ const Events = () => {
 					verificarla.
 				</p>
 			</section>
-
-			<Mission
-				signedIn={Boolean(address)}
-				hasBadge={Boolean(badges?.length)}
-				hasEvent={hasEvent}
-				claimTo={featured ? `/evento/${featured.id}` : "#comunidad"}
-			/>
 
 			{featured && <FeaturedEvent event={featured} />}
 

@@ -71,3 +71,14 @@
 		transform: translate(-6vmax, 4vmax) scale(1.1);
 	}
 }
+
+/* Keyframes must live in each CSS Module: names are scoped per file. */
+@keyframes twinkle {
+	0%,
+	100% {
+		opacity: 0.35;
+	}
+	50% {
+		opacity: 1;
+	}
+}

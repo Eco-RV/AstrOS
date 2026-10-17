@@ -189,3 +189,15 @@
 		transform: rotate(45deg);
 	}
 }
+
+/* Keyframes must live in each CSS Module: names are scoped per file. */
+@keyframes fade-up {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}

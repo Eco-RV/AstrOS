@@ -9,7 +9,6 @@ import {
 	useLatestEvents,
 } from "../attendance/useAttendance"
 import { sparklePath } from "../brand/Logo"
-import { useCavosState } from "../cavos/context"
 import { useWallet } from "../hooks/useWallet"
 
 const W = 360
@@ -89,7 +88,6 @@ const Constellation = ({ badges }: { badges: Badge[] }) => {
 
 const MyBadges = () => {
 	const { address } = useWallet()
-	const cavos = useCavosState()
 	const { data: badges, isLoading } = useBadgesOf(address)
 	const { data: events } = useLatestEvents()
 	const [view, setView] = useState<"sky" | "list">("sky")
@@ -115,17 +113,7 @@ const MyBadges = () => {
 				</p>
 			</section>
 
-			{!address ? (
-				<div className={styles.empty}>
-					<strong>Tu cielo te está esperando</strong>
-					<span>Entra para ver tus insignias.</span>
-					{cavos && (
-						<button className="btn-primary" onClick={cavos.signIn}>
-							Entrar con mi correo
-						</button>
-					)}
-				</div>
-			) : isLoading ? (
+			{isLoading ? (
 				<div className={styles.skeleton} style={{ height: 240 }} />
 			) : !badges?.length ? (
 				<div className={styles.empty}>
