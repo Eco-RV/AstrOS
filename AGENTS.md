@@ -126,6 +126,7 @@ environments.toml         contracts per environment (development = testnet)
 app/src/pages/            Events, EventDetail, CreateEvent, MyBadges ("Mi constelación")
 app/src/attendance/       attendance contract hooks, event form, badge art, animations
 app/src/brand/            logo (Seal, Wordmark) and the starfield background
+app/src/entry/            loading screen, login (wallet required) and EntryGate
 app/src/cavos/            Cavos embedded wallets (optional, PUBLIC_CAVOS_APP_ID)
 app/src/providers/        WalletProvider: one useWallet() for Cavos + extension wallets
 app/src/components/       shared UI (account menu, auto-funding banner…)
@@ -134,6 +135,7 @@ app-lib/                  network env, wallet kit, friendbot, events (shared TS 
 app-lib/clients/          GENERATED contract clients (gitignored)
 scripts/                  doctor, agents-sync, dev-guard, ci-clients
 docs/AGENT-SETUP.md       per-agent setup and optional MCP servers
+docs/handoff/finance-os/  handoff kit to build the family USDC savings ("Constelación familiar") in Finance OS
 ```
 
 ## Code conventions

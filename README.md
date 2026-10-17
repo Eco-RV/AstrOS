@@ -165,6 +165,10 @@ app/.env                  configuración pública (no se sube a git)
 
 `feature/x.y.z` → PR a `dev_main` (staging, Preview de Vercel) → PR a `main` (producción) → etiqueta `vx.y.z` + release. Cada entorno tiene sus propios contratos en testnet; los cambios a contratos ya desplegados se hacen con `upgrade` y se documentan en `Versionamiento/`. Detalle completo en [docs/FLUJO.md](docs/FLUJO.md); historial en [CHANGELOG.md](CHANGELOG.md).
 
+## Traspaso a Finance OS
+
+Kit para llevar lo aprendido en AstrOS (skills, wallets, contratos, marca de constelaciones) a Finance OS y construir ahí la Constelación familiar (ahorro familiar en USDC): [docs/handoff/finance-os/](docs/handoff/finance-os/README.md).
+
 ## Problemas comunes en Windows
 
 - **`npm install` falla con `"yarn" no se reconoce`:** una dependencia ejecuta un script que no funciona en `cmd`. Usa `npm install --ignore-scripts` y después `npm run agents:sync`.

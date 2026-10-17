@@ -71,3 +71,81 @@
 		transform: translate(-6vmax, 4vmax) scale(1.1);
 	}
 }
+
+/* Meteor shower: the element is rotated so its x axis points down-left; the
+   streak travels along it with the bright head in front and the tail fading
+   behind. */
+.meteor {
+	position: absolute;
+	width: var(--length);
+	height: 2px;
+	transform: rotate(145deg);
+	transform-origin: left center;
+}
+
+.meteor::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: 99px;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		rgba(255, 255, 255, 0.15) 40%,
+		rgba(255, 255, 255, 0.9)
+	);
+	opacity: 0;
+	animation: meteor var(--duration) linear var(--delay) infinite;
+}
+
+.meteor::after {
+	content: "";
+	position: absolute;
+	right: -2px;
+	top: 50%;
+	width: 4px;
+	height: 4px;
+	margin-top: -2px;
+	border-radius: 50%;
+	background: #fff;
+	box-shadow:
+		0 0 6px 2px rgba(255, 255, 255, 0.8),
+		0 0 14px 4px rgba(255, 214, 107, 0.45);
+	opacity: 0;
+	animation: meteor var(--duration) linear var(--delay) infinite;
+}
+
+@keyframes meteor {
+	0% {
+		opacity: 0;
+		transform: translateX(0);
+	}
+	2% {
+		opacity: 1;
+	}
+	11% {
+		opacity: 0;
+		transform: translateX(55vmax);
+	}
+	100% {
+		opacity: 0;
+		transform: translateX(55vmax);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.meteor {
+		display: none;
+	}
+}
+
+/* Keyframes must live in each CSS Module: names are scoped per file. */
+@keyframes twinkle {
+	0%,
+	100% {
+		opacity: 0.35;
+	}
+	50% {
+		opacity: 1;
+	}
+}

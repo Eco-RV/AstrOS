@@ -4,6 +4,7 @@ import { Seal, Wordmark } from "./brand/Logo"
 import { Starfield } from "./brand/Starfield"
 import { AutoFund } from "./components/AutoFund"
 import ConnectAccount from "./components/ConnectAccount"
+import { EntryGate } from "./entry/EntryGate"
 import CreateEvent from "./pages/CreateEvent"
 import EventDetail from "./pages/EventDetail"
 import Events from "./pages/Events"
@@ -13,7 +14,13 @@ import Projector from "./pages/Projector"
 function App() {
 	return (
 		<Routes>
-			<Route element={<AppLayout />}>
+			<Route
+				element={
+					<EntryGate>
+						<AppLayout />
+					</EntryGate>
+				}
+			>
 				<Route path="/" element={<Events />} />
 				<Route path="/crear" element={<CreateEvent />} />
 				<Route path="/evento/:id" element={<EventDetail />} />

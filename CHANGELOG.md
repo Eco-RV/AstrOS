@@ -3,6 +3,42 @@
 Formato: una sección por versión (`## x.y.z — AAAA-MM-DD`, o `— sin publicar`
 mientras se desarrolla). Flujo completo en [docs/FLUJO.md](docs/FLUJO.md).
 
+## 1.0.2 — 2026-10-17
+
+AstrOS vuelve a lo esencial: una app limpia de eventos e insignias, a la que
+solo se entra con una wallet.
+
+### Entrada
+
+- **Pantalla de carga** con el tema de AstrOS cada vez que se abre la app: la
+  constelación del logo se dibuja estrella por estrella mientras se restaura la
+  sesión. También da la bienvenida al terminar de entrar.
+- **Login obligatorio** ("Entra a la constelación"): sin wallet no se ve la app.
+  Opciones: correo o Google (Cavos crea la wallet al instante) o conectar una
+  wallet de extensión (Freighter, xBull, Lobstr…). Si la cuenta de Cavos
+  necesita desbloquear este dispositivo, ofrece la passkey.
+- El modo presentación (`/evento/:id/proyectar`) sigue abierto sin login.
+- **Lluvia de estrellas** en el fondo de toda la app: estrellas fugaces suaves,
+  cada una a su ritmo (se apagan con "reducir movimiento" y en el modo
+  presentación, para no confundirlas con los reclamos).
+
+### Limpieza
+
+- Se quitó "Tu misión" (el paso a paso del inicio).
+- Fuera los botones y mensajes de "inicia sesión" dentro de la app: ahora todo
+  pasa por la pantalla de entrada.
+
+### Correcciones
+
+- Las animaciones que usaban `spin`, `twinkle` y `fade-up` dentro de los CSS
+  Modules no corrían (los nombres se renombran por archivo): el anillo que gira
+  en los eventos abiertos, el parpadeo de las estrellas y las entradas de página
+  ya funcionan.
+
+### Contratos
+
+- Sin cambios.
+
 ## 1.0.1 — 2026-10-15
 
 "Tu constelación": rediseño mobile first para la demo de clase. Plan completo en
