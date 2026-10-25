@@ -1,0 +1,63 @@
+.seal {
+	display: block;
+	flex: none;
+}
+
+.bg {
+	fill: var(--void);
+}
+
+.ring {
+	fill: none;
+	stroke: var(--signal);
+}
+
+.ticks {
+	fill: none;
+	stroke: var(--paper);
+	transform-origin: 32px 32px;
+}
+
+.disc {
+	fill: var(--signal);
+}
+
+.orbit {
+	fill: var(--alert);
+}
+
+.inverted .bg {
+	fill: var(--signal);
+}
+
+.inverted .ring {
+	stroke: var(--void);
+}
+
+.inverted .ticks {
+	stroke: var(--void);
+}
+
+.inverted .disc {
+	fill: var(--void);
+}
+
+.spin .ticks {
+	animation: spin 30s linear infinite;
+}
+
+.wordmark {
+	font-family: var(--display);
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: -0.01em;
+	color: var(--signal);
+	white-space: nowrap;
+	text-transform: uppercase;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}

@@ -1,0 +1,43 @@
+.plane {
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background: var(--bg);
+}
+
+.grid {
+	background-color: var(--bg);
+	background-image:
+		linear-gradient(var(--line) 1px, transparent 1px),
+		linear-gradient(90deg, var(--line) 1px, transparent 1px);
+	background-size: clamp(88px, 14vw, 180px) clamp(88px, 14vw, 180px);
+	background-position: center center;
+}
+
+/* Two 1px lines that frame the content column (max-width: var(--wrap)). */
+.guides {
+	position: absolute;
+	inset: 0;
+	width: min(var(--wrap), 100%);
+	margin: 0 auto;
+	padding: 0 var(--gutter);
+}
+
+.guides::before,
+.guides::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 1px;
+	background: var(--line);
+}
+
+.guides::before {
+	left: var(--gutter);
+}
+
+.guides::after {
+	right: var(--gutter);
+}

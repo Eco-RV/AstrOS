@@ -1,126 +1,91 @@
-import { useId } from "react"
+import styles from "./Logo.module.css"
 
-/** Aurora gradient shared by the logo pieces (ids must be unique per SVG). */
-const Aurora = ({ id }: { id: string }) => (
-	<linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-		<stop offset="0" stopColor="#7B61FF" />
-		<stop offset=".55" stopColor="#C86DD7" />
-		<stop offset="1" stopColor="#3DD6F5" />
-	</linearGradient>
-)
-
-/** Ringed planet (the "O" of the wordmark and the center of the seal). */
-const Planet = ({
-	cx,
-	cy,
-	r,
-	fill,
-}: {
-	cx: number
-	cy: number
-	r: number
-	fill: string
-}) => {
-	const rx = r * 1.6
-	const ry = r * 0.42
-	return (
-		<g transform={`rotate(-20 ${cx} ${cy})`}>
-			<path
-				d={`M${cx - rx} ${cy} A${rx} ${ry} 0 0 1 ${cx + rx} ${cy}`}
-				fill="none"
-				stroke="#FFD66B"
-				strokeWidth={r / 5.5}
-				opacity=".7"
-			/>
-			<circle cx={cx} cy={cy} r={r} fill={fill} />
-			<path
-				d={`M${cx - rx} ${cy} A${rx} ${ry} 0 0 0 ${cx + rx} ${cy}`}
-				fill="none"
-				stroke="#FFD66B"
-				strokeWidth={r / 5.5}
-				strokeLinecap="round"
-			/>
-		</g>
-	)
-}
-
-/** 4-point sparkle centered on (cx, cy). */
-export const sparklePath = (cx: number, cy: number, r: number) =>
-	`M${cx} ${cy - r} Q${cx} ${cy} ${cx + r} ${cy} Q${cx} ${cy} ${cx} ${cy + r} Q${cx} ${cy} ${cx - r} ${cy} Q${cx} ${cy} ${cx} ${cy - r}Z`
-
-/** App icon: notched badge seal with a planet. */
+/**
+ * AstrOS mark: a verification seal. Outer signal ring, a ring of tick marks
+ * that turns slowly, a solid center disc and an alert point in orbit. Below
+ * ~24px the tick marks are dropped so it still reads (same shapes as
+ * favicon.svg). Colors come from the palette tokens.
+ */
 export const Seal = ({
 	size = 40,
 	className,
+	inverted = false,
+	spin = false,
 }: {
 	size?: number
 	className?: string
+	/** Void on signal, for signal blocks. */
+	inverted?: boolean
+	/** Keep the tick ring turning (header, loading screen). */
+	spin?: boolean
 }) => {
-	const id = useId()
+	const small = size < 24
 	return (
 		<svg
-			viewBox="0 0 128 128"
+			viewBox="0 0 64 64"
 			width={size}
 			height={size}
-			className={className}
+			className={`${styles.seal} ${inverted ? styles.inverted : ""} ${spin ? styles.spin : ""} ${className ?? ""}`}
 			aria-hidden
 		>
-			<defs>
-				<Aurora id={id} />
-			</defs>
-			<circle cx="64" cy="64" r="56" fill={`url(#${id})`} />
-			<circle
-				cx="64"
-				cy="64"
-				r="58"
-				fill="none"
-				stroke={`url(#${id})`}
-				strokeWidth="8"
-				strokeDasharray="4.555 4.555"
-			/>
-			<circle cx="64" cy="64" r="47" fill="#0B0820" />
-			<Planet cx={64} cy={70} r={20} fill={`url(#${id})`} />
-			<path d={sparklePath(90, 36, 10)} fill="#fff" />
+			{inverted && <rect className={styles.bg} width="64" height="64" />}
+			{small ? (
+				<>
+					<circle
+						className={styles.ring}
+						cx="32"
+						cy="32"
+						r="24"
+						strokeWidth="5"
+					/>
+					<circle className={styles.disc} cx="32" cy="32" r="12" />
+					<circle className={styles.orbit} cx="51" cy="13" r="6" />
+				</>
+			) : (
+				<>
+					<circle
+						className={styles.ring}
+						cx="32"
+						cy="32"
+						r="25"
+						strokeWidth={size < 48 ? 3 : 2}
+					/>
+					<circle
+						data-ticks
+						className={styles.ticks}
+						cx="32"
+						cy="32"
+						r="19"
+						strokeWidth="5"
+						strokeDasharray="1 4"
+					/>
+					<circle className={styles.disc} cx="32" cy="32" r="10" />
+					<circle
+						className={styles.orbit}
+						cx="50"
+						cy="14"
+						r={size < 48 ? 4 : 3.5}
+					/>
+				</>
+			)}
 		</svg>
 	)
 }
 
-/** "AstrOS" with the O as a ringed planet. Text follows `color`. */
+/** "AstrOS" set in Oswald. */
 export const Wordmark = ({
 	height = 32,
 	className,
 }: {
 	height?: number
 	className?: string
-}) => {
-	const id = useId()
-	return (
-		<svg
-			viewBox="0 0 244 96"
-			height={height}
-			width={(height * 244) / 96}
-			className={className}
-			role="img"
-			aria-label="AstrOS"
-		>
-			<defs>
-				<Aurora id={id} />
-			</defs>
-			<g
-				fontFamily="'Space Grotesk', Inter, system-ui, sans-serif"
-				fontWeight="700"
-				fontSize="64"
-				fill="currentColor"
-			>
-				<text x="4" y="70" textLength="116" lengthAdjust="spacingAndGlyphs">
-					Astr
-				</text>
-				<text x="200" y="70" textLength="38" lengthAdjust="spacingAndGlyphs">
-					S
-				</text>
-			</g>
-			<Planet cx={164} cy={47} r={22} fill={`url(#${id})`} />
-			<path d={sparklePath(186, 18, 10)} fill="#FFD66B" />
-		</svg>
-	)
-}
+}) => (
+	<span
+		className={`${styles.wordmark} ${className ?? ""}`}
+		role="img"
+		aria-label="AstrOS"
+		style={{ fontSize: height }}
+	>
+		AstrOS
+	</span>
+)
