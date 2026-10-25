@@ -112,6 +112,9 @@ function friendlyError(e: unknown): string {
 	if (/account not found|resource missing|not found: .*account/i.test(msg))
 		return "Tu cuenta todavía no tiene XLM de prueba: espera a que termine la carga (o pídelos desde tu perfil) y vuelve a intentarlo."
 	if (/rejected|declined|cancel/i.test(msg)) return "Cancelaste la firma."
+	// The network refused the signature: signed by another account or network.
+	if (/txBadAuth/.test(msg))
+		return "La red rechazó la firma: tu wallet firmó con otra cuenta o en otra red. Revisa que tu wallet tenga activa la misma cuenta que ves en AstrOS y que esté en Testnet."
 	// claim_v2: the rotating-QR signature didn't verify (tampered or old key).
 	if (/ed25519|signature.*(invalid|verif)|Crypto, InvalidInput/i.test(msg))
 		return "El código QR no es válido. Escanea el QR que se proyecta ahora en el evento."
