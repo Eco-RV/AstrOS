@@ -3,6 +3,66 @@
 Formato: una sección por versión (`## x.y.z — AAAA-MM-DD`, o `— sin publicar`
 mientras se desarrolla). Flujo completo en [docs/FLUJO.md](docs/FLUJO.md).
 
+## 2.0.1 — sin publicar
+
+Rediseño visual completo con el sistema visual común de las apps de Oswald
+(`design-system.md`: estructura de Stellar Apex, energía de Zenless Zone Zero) y
+la paleta propia de AstrOS, **Nebula**. Pensado para organizadores serios
+(empresas, universidades, eventos de blockchain). Solo cambia lo visual: rutas,
+wallets, contratos y testnet quedan igual.
+
+### Sistema
+
+- **Paleta Nebula** en un solo bloque de `app-lib/styles.css` (`--void`,
+  `--surface`, `--paper`, `--signal` violeta claro, `--alert` rosa) más los
+  semánticos `--ok` y `--danger`. Todo lo demás se deriva con `color-mix`; los
+  componentes no usan colores literales.
+- **Slabs de papel** (`.slab`) con bordes diagonales, medio tono y banda de
+  peligro: redefinen los mismos tokens, así los componentes funcionan igual
+  dentro.
+- Tipografía **Oswald** en toda la app (títulos en mayúsculas, números de
+  capítulo inclinados, cifras tabulares).
+- **Sombras duras** (`8px 8px 0`) en lugar de sombras difusas; botones que se
+  hunden al presionar. Esquinas cuadradas en todo.
+- **Ícono nuevo** (sello de verificación con anillo que gira) en el header, el
+  login, el QR y el favicon.
+- Fondo técnico (`Blueprint`) con guías verticales; reemplaza el cielo con
+  estrellas fugaces (`Starfield` eliminado).
+- Índice lateral de secciones (escritorio, ≥ 1100 px) y tira de película con los
+  nombres de los eventos.
+- Movimiento: letras que suben en secuencia, entrada al hacer scroll
+  (`useReveal`) y botones magnéticos. Los textos no reaccionan al cursor; solo
+  botones y tarjetas. Todo se apaga con "reducir movimiento".
+
+### Pantallas
+
+- **Login**: tarjeta en bloque de color sobre la cuadrícula, "Entra a la
+  constelación" y chip de red con punto que pulsa.
+- **Pantalla de carga**: "Cargando constelación · NN %", una vez por sesión, 1.3
+  s y se salta con un clic.
+- **Inicio**: hero con la foto del evento destacado, sticker "Testnet" y rail de
+  estado (el número de eventos en curso sale del contrato); misiones dentro de
+  un slab y CTA final para crear un evento.
+- **Eventos = misiones**: tarjetas escalonadas con la foto de cada evento (o su
+  medalla si no tiene) y sticker de estado, agrupadas en En curso, Próximas,
+  Completadas y Terminadas (estilo bloqueado a rayas con candado). Reemplazan
+  los filtros.
+- **Detalle**: medalla grande y ficha del evento en un slab, con medidor
+  semicircular del cupo (solo si el evento tiene máximo).
+- **Mi constelación**: ficha de jugador (nivel = insignias, barra de XP sobre el
+  máximo de 100 por cuenta), mapa técnico con anillos que giran y la última ruta
+  punteada, y logros que se voltean (fecha, evento y enlace a Stellar Expert).
+  Las insignias por reclamar de eventos abiertos o próximos se ven bloqueadas.
+- **Insignias**: `BadgeArt` ahora es una medalla SVG (anillo, marcas y disco con
+  la sigla o la foto del evento).
+- Crear evento, modo presentación, celebración al reclamar, menú de cuenta,
+  avisos (banda oscura con borde `--ok`/`--danger`) y banner de XLM de prueba
+  con el estilo nuevo.
+
+### Contratos
+
+- Sin cambios.
+
 ## 1.0.2 — 2026-10-17
 
 AstrOS vuelve a lo esencial: una app limpia de eventos e insignias, a la que
