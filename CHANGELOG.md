@@ -44,11 +44,19 @@ asistencia contra el farming, certificados verificables, moderación y cobro.
 - Botón **Reportar** en cada evento (una vez por cuenta) y filtro de palabras
   ofensivas o de burla al crear espacios y eventos.
 
-### Cobro (testnet, XLM de prueba)
+### Cobro en USDC por tramos de asistentes
 
 - Plan gratis: 2 eventos al mes por espacio, hasta 50 asistentes cada uno.
-- Después: **evento único** (10 XLM, se cobra en la misma firma) o **plan
-  mensual** (50 XLM, sin tope de asistentes). Los precios los fija el admin.
+- **Evento único** por tamaño (hasta 100 / 500 / 2 000 asistentes: 15 / 45 / 120
+  USDC), cobrado en la misma firma.
+- **Plan mensual** por tamaño de evento (39 / 99 / 249 USDC al mes). Un evento
+  más grande que el plan paga su tramo.
+- `quote_event` cotiza el costo exacto antes de firmar; el formulario lo muestra
+  según los asistentes esperados. Solo los eventos gratis gastan la cuota
+  gratis.
+- Botón para agregar la trustline de USDC y enlace al faucet de Circle.
+- Plan de patrocinio de tarifas para asistentes en `docs/patrocinio-tarifas.md`
+  (sin implementar).
 
 ### Contratos
 

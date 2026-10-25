@@ -1,11 +1,16 @@
 // Demo data for AstrOS 2.1.0 on the DEVELOPMENT contract (testnet, disposable).
 //
 //   node scripts/seed-demo.mjs [G…moderator]
+//   node scripts/seed-demo.mjs --solo-precios     (only steps 0–1)
 //
 // With the local `me` identity (the deployer and admin of the development
 // contract, never a browser wallet) it:
-//   1. sets prices (XLM on testnet): 2 free events/month with up to 50
-//      attendees, 10 XLM per extra event, 50 XLM per month;
+//   0. adds the USDC trustline to `me`, the treasury (it can't receive USDC
+//      without it);
+//   1. sets prices in USDC by attendee tiers: 2 free events/month with up to
+//      50 attendees; one-off events of up to 100/500/2000 attendees for
+//      15/45/120 USDC; monthly plans covering events of up to 100/500/2000
+//      attendees for 39/99/249 USDC;
 //   2. creates three spaces (barbershop, university, community) and verifies
 //      the first two, so the public home shows them and the third one shows
 //      the "not verified" flow;
@@ -21,8 +26,10 @@ import { fileURLToPath } from "node:url"
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const appDir = resolve(root, "app")
-const XLM_SAC = "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC"
-const XLM = 10_000_000n
+// USDC by Circle on testnet: its contract (SAC) and its classic issuer.
+const USDC_SAC = "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA"
+const USDC_ISSUER = "GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5"
+const USDC = 10_000_000n
 
 const clients = readFileSync(resolve(root, "app-lib/clients/index.ts"), "utf8")
 const contractId = clients.match(
@@ -63,16 +70,49 @@ const DAY = 24 * HOUR
 
 console.log(`Contrato: ${contractId}\nAdmin (me): ${me}\n`)
 
+try {
+	stellar([
+		"tx",
+		"new",
+		"change-trust",
+		"--source",
+		"me",
+		"--network",
+		"testnet",
+		"--line",
+		`USDC:${USDC_ISSUER}`,
+	])
+	console.log("✓ trustline USDC de la tesorería")
+} catch {
+	console.log("· la tesorería ya tenía trustline USDC")
+}
+
+const tiers = (list) =>
+	list.map(([max_attendees, price]) => ({
+		max_attendees,
+		price: String(BigInt(price) * USDC),
+	}))
+
 invoke("set_pricing", {
 	pricing: {
-		token: XLM_SAC,
+		token: USDC_SAC,
 		treasury: me,
 		free_events_per_month: 2,
 		free_claims_per_event: 50,
-		monthly_price: String(50n * XLM),
-		single_event_price: String(10n * XLM),
+		event_tiers: tiers([
+			[100, 15],
+			[500, 45],
+			[2000, 120],
+		]),
+		plan_tiers: tiers([
+			[100, 39],
+			[500, 99],
+			[2000, 249],
+		]),
 	},
 })
+
+if (process.argv.includes("--solo-precios")) process.exit(0)
 
 // Category: 0 Universidad, 1 Empresa, 2 Comunidad, 3 Belleza, 4 Bienestar,
 // 5 Conferencia, 6 Otro. Accent: index into ACCENTS (app/src/spaces/catalog.ts).
