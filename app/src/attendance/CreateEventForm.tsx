@@ -1,6 +1,13 @@
+import { Buffer } from "buffer"
 import { attendance } from "@stellar-scaffold/app-lib/clients"
+import { AttendMode, BillingKind, ProofMode } from "attendance"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { contentProblem } from "../lib/moderation"
+import { createEventKey, supportsEventKeys } from "../proof/eventKey"
+import { formatXlm, MODES, PROOF_MODES } from "../spaces/catalog"
+import saas from "../spaces/saas.module.css"
+import { useSpaceBilling } from "../spaces/useSaas"
 import styles from "./attendance.module.css"
 import { BadgeArt } from "./BadgeArt"
 import { PhotoPicker } from "./PhotoPicker"
@@ -40,7 +47,11 @@ const PRESETS: { id: Preset; label: string }[] = [
 	{ id: "custom", label: "Personalizado" },
 ]
 
-export const CreateEventForm = () => {
+/**
+ * Create an event v2 inside `spaceId`: proof method, mode and billing. For the
+ * rotating QR it creates the event key on this device before signing.
+ */
+export const CreateEventForm = ({ spaceId }: { spaceId: number }) => {
 	const navigate = useNavigate()
 	const { run, pending } = useAttendanceWrite()
 	const [name, setName] = useState("")
@@ -55,6 +66,18 @@ export const CreateEventForm = () => {
 		toLocalInput(new Date(Date.now() + 2 * 3600_000)),
 	)
 	const [maxClaims, setMaxClaims] = useState("")
+	const [mode, setMode] = useState<AttendMode>(AttendMode.Presencial)
+	const [proof, setProof] = useState<ProofMode>(ProofMode.CheckInStaff)
+	const { data: billing } = useSpaceBilling(spaceId)
+	const problem = contentProblem(name, description, location)
+	const paid = billing?.next_event === BillingKind.Single
+
+	// Virtual events can only use approval; the QR and check-in need a room.
+	const chooseMode = (m: AttendMode) => {
+		setMode(m)
+		if (m === AttendMode.Virtual) setProof(ProofMode.Aprobacion)
+		else if (proof === ProofMode.Aprobacion) setProof(ProofMode.CheckInStaff)
+	}
 
 	const choose = (p: Preset) => {
 		setPreset(p)
@@ -66,6 +89,17 @@ export const CreateEventForm = () => {
 
 	const submit = async (e: React.FormEvent) => {
 		e.preventDefault()
+		if (problem) return
+		let eventKey: Buffer | undefined
+		if (proof === ProofMode.QrRotativo) {
+			if (!(await supportsEventKeys())) {
+				alert(
+					"Este navegador no puede crear la llave del QR. Usa Chrome, Edge, Firefox o Safari actualizados, o elige el check-in del staff.",
+				)
+				return
+			}
+			eventKey = Buffer.from(await createEventKey())
+		}
 		// Quick presets are computed again at submit time so "now" is really now.
 		const [start, end] =
 			preset === "custom"
@@ -75,22 +109,28 @@ export const CreateEventForm = () => {
 					) as [bigint, bigint])
 		const id = await run(
 			(publicKey) =>
-				attendance.create_event(
+				attendance.create_event_v2(
 					{
 						organizer: publicKey,
-						name: name.trim(),
-						description: description.trim(),
-						location: location.trim(),
-						image_url: imageUrl.trim(),
-						starts_at: start,
-						ends_at: end,
-						max_claims: Number(maxClaims) || 0,
+						space_id: spaceId,
+						input: {
+							name: name.trim(),
+							description: description.trim(),
+							location: location.trim(),
+							image_url: imageUrl.trim(),
+							starts_at: start,
+							ends_at: end,
+							max_claims: Number(maxClaims) || 0,
+							mode,
+							proof,
+							event_key: eventKey,
+						},
 					},
 					{ publicKey },
 				),
 			"Evento creado en la blockchain.",
 		)
-		if (id !== undefined) void navigate(`/evento/${id}`)
+		if (id !== undefined) void navigate(`/organizar/evento/${id}`)
 	}
 
 	return (
@@ -208,21 +248,76 @@ export const CreateEventForm = () => {
 					</label>
 				</fieldset>
 
+				<fieldset className={styles.fieldset}>
+					<legend>4 · ¿Cómo se comprueba la asistencia?</legend>
+					<div className={saas.filters} role="group" aria-label="Modalidad">
+						{MODES.map((m) => (
+							<button
+								key={m.id}
+								type="button"
+								aria-pressed={mode === m.id}
+								onClick={() => chooseMode(m.id)}
+							>
+								{m.label}
+							</button>
+						))}
+					</div>
+					<div className={saas.choices} role="group" aria-label="Método">
+						{PROOF_MODES.filter((p) =>
+							mode === AttendMode.Virtual
+								? p.id === ProofMode.Aprobacion
+								: mode === AttendMode.Presencial
+									? p.id !== ProofMode.Aprobacion
+									: true,
+						).map((p) => (
+							<button
+								key={p.id}
+								type="button"
+								className={saas.choice}
+								aria-pressed={proof === p.id}
+								onClick={() => setProof(p.id)}
+							>
+								<strong>{p.label}</strong>
+								<small>{p.hint}</small>
+							</button>
+						))}
+					</div>
+					{proof === ProofMode.QrRotativo && (
+						<p className={styles.hint} style={{ margin: 0 }}>
+							La llave que firma el QR se crea en este navegador y no sale de
+							él. Proyecta desde este dispositivo; desde otro tendrás que crear
+							una llave nueva.
+						</p>
+					)}
+				</fieldset>
+
 				<p className={styles.hint} style={{ margin: 0 }}>
 					Todo lo que escribas queda público en la blockchain y no se puede
 					borrar: no incluyas datos personales.
 				</p>
+				{problem && <p className={saas.warn}>{problem}</p>}
+				{billing?.pricing_set && (
+					<p className={saas.note}>
+						{paid
+							? `Ya usaste tus eventos gratis de este mes: este evento cuesta ${formatXlm(billing.single_event_price)} y se cobra en la misma firma. Con el plan mensual no pagas por evento.`
+							: billing.next_event === BillingKind.Plan
+								? "Lo cubre tu plan mensual, sin tope de asistentes."
+								: `Evento gratis (${billing.events_this_month + 1} de ${billing.free_events_per_month} este mes), con hasta ${billing.free_claims_per_event} asistentes.`}
+					</p>
+				)}
 				<div className={styles.submitBar}>
 					<button
 						type="submit"
 						className={`btn-primary ${styles.claimButton}`}
-						disabled={pending || uploading}
+						disabled={pending || uploading || Boolean(problem)}
 					>
 						{pending
 							? "Firmando en tu wallet…"
 							: uploading
 								? "Subiendo la foto…"
-								: "Crear evento"}
+								: paid && billing
+									? `Crear y pagar ${formatXlm(billing.single_event_price)}`
+									: "Crear evento"}
 					</button>
 				</div>
 			</div>
