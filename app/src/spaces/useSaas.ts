@@ -124,6 +124,30 @@ export const useSpaceBilling = (spaceId?: number) =>
 			(await attendance.space_billing({ space_id: spaceId! })).result,
 	})
 
+/** Prices and tiers set by the admin (null until they are configured). */
+export const usePricing = () =>
+	useQuery({
+		queryKey: [KEY, "pricing"],
+		queryFn: async () => (await attendance.pricing()).result ?? null,
+	})
+
+/** What an event of `maxClaims` attendees costs this space right now. */
+export const useQuote = (spaceId: number, maxClaims: number) =>
+	useQuery({
+		queryKey: [KEY, "quote", spaceId, maxClaims],
+		queryFn: async () => {
+			const r = (
+				await attendance.quote_event({
+					space_id: spaceId,
+					max_claims: maxClaims,
+				})
+			).result
+			if (r.isErr()) throw new Error(r.unwrapErr().message)
+			return r.unwrap()
+		},
+		retry: false,
+	})
+
 export const useReportedEvents = (enabled = true) =>
 	useQuery({
 		queryKey: [KEY, "reports"],

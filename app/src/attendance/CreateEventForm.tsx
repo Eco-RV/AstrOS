@@ -3,11 +3,17 @@ import { attendance } from "@stellar-scaffold/app-lib/clients"
 import { AttendMode, BillingKind, ProofMode } from "attendance"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { tokenSymbol } from "../billing/usdc"
 import { contentProblem } from "../lib/moderation"
 import { createEventKey, supportsEventKeys } from "../proof/eventKey"
-import { formatXlm, MODES, PROOF_MODES } from "../spaces/catalog"
+import {
+	attendeesLabel,
+	formatAmount,
+	MODES,
+	PROOF_MODES,
+} from "../spaces/catalog"
 import saas from "../spaces/saas.module.css"
-import { useSpaceBilling } from "../spaces/useSaas"
+import { usePricing, useQuote } from "../spaces/useSaas"
 import styles from "./attendance.module.css"
 import { BadgeArt } from "./BadgeArt"
 import { PhotoPicker } from "./PhotoPicker"
@@ -68,9 +74,15 @@ export const CreateEventForm = ({ spaceId }: { spaceId: number }) => {
 	const [maxClaims, setMaxClaims] = useState("")
 	const [mode, setMode] = useState<AttendMode>(AttendMode.Presencial)
 	const [proof, setProof] = useState<ProofMode>(ProofMode.CheckInStaff)
-	const { data: billing } = useSpaceBilling(spaceId)
+	const { data: pricing } = usePricing()
+	// The price depends on the size: ask the contract for the exact quote.
+	const { data: quote, error: quoteError } = useQuote(
+		spaceId,
+		Number(maxClaims) || 0,
+	)
+	const symbol = tokenSymbol(pricing?.token)
 	const problem = contentProblem(name, description, location)
-	const paid = billing?.next_event === BillingKind.Single
+	const paid = quote?.kind === BillingKind.Single
 
 	// Virtual events can only use approval; the QR and check-in need a room.
 	const chooseMode = (m: AttendMode) => {
@@ -236,16 +248,24 @@ export const CreateEventForm = ({ spaceId }: { spaceId: number }) => {
 						</p>
 					)}
 					<label>
-						Máximo de insignias
+						¿Cuántos asistentes esperas?
 						<input
 							type="number"
 							inputMode="numeric"
 							min={0}
-							placeholder="Sin límite"
+							placeholder={
+								pricing
+									? `Hasta ${pricing.free_claims_per_event} es gratis`
+									: "Sin límite"
+							}
 							value={maxClaims}
 							onChange={(e) => setMaxClaims(e.target.value)}
 						/>
 					</label>
+					<p className={styles.hint} style={{ margin: 0 }}>
+						Es el máximo de insignias del evento: el precio depende de este
+						número.
+					</p>
 				</fieldset>
 
 				<fieldset className={styles.fieldset}>
@@ -296,27 +316,30 @@ export const CreateEventForm = ({ spaceId }: { spaceId: number }) => {
 					borrar: no incluyas datos personales.
 				</p>
 				{problem && <p className={saas.warn}>{problem}</p>}
-				{billing?.pricing_set && (
+				{quoteError && <p className={saas.warn}>{quoteError.message}</p>}
+				{pricing && quote && (
 					<p className={saas.note}>
-						{paid
-							? `Ya usaste tus eventos gratis de este mes: este evento cuesta ${formatXlm(billing.single_event_price)} y se cobra en la misma firma. Con el plan mensual no pagas por evento.`
-							: billing.next_event === BillingKind.Plan
-								? "Lo cubre tu plan mensual, sin tope de asistentes."
-								: `Evento gratis (${billing.events_this_month + 1} de ${billing.free_events_per_month} este mes), con hasta ${billing.free_claims_per_event} asistentes.`}
+						{quote.kind === BillingKind.Single
+							? `Evento único ${attendeesLabel(quote.max_claims)}: ${formatAmount(quote.cost, symbol)}, se cobra en la misma firma. Con el plan mensual no pagas por evento.`
+							: quote.kind === BillingKind.Plan
+								? `Lo cubre tu plan mensual: ${attendeesLabel(quote.max_claims)}.`
+								: `Evento gratis, ${attendeesLabel(quote.max_claims)}.`}
 					</p>
 				)}
 				<div className={styles.submitBar}>
 					<button
 						type="submit"
 						className={`btn-primary ${styles.claimButton}`}
-						disabled={pending || uploading || Boolean(problem)}
+						disabled={
+							pending || uploading || Boolean(problem) || Boolean(quoteError)
+						}
 					>
 						{pending
 							? "Firmando en tu wallet…"
 							: uploading
 								? "Subiendo la foto…"
-								: paid && billing
-									? `Crear y pagar ${formatXlm(billing.single_event_price)}`
+								: paid && quote
+									? `Crear y pagar ${formatAmount(quote.cost, symbol)}`
 									: "Crear evento"}
 					</button>
 				</div>

@@ -3,8 +3,9 @@ import { useQuery } from "@tanstack/react-query"
 import { Link } from "react-router-dom"
 import attendanceStyles from "../attendance/attendance.module.css"
 import { useAttendanceWrite } from "../attendance/useAttendance"
+import { tokenSymbol } from "../billing/usdc"
 import { RiseText } from "../motion/RiseText"
-import { categoryLabel, formatXlm } from "../spaces/catalog"
+import { attendeesLabel, categoryLabel, formatAmount } from "../spaces/catalog"
 import styles from "../spaces/saas.module.css"
 import { SpaceLogo, VerifiedSticker } from "../spaces/SpaceUi"
 import {
@@ -114,23 +115,39 @@ const Admin = () => {
 			<section className={styles.card}>
 				<h3>Precios</h3>
 				{pricing ? (
-					<div className={styles.statRow}>
-						<div className={styles.stat}>
-							<span>Gratis al mes</span>
-							<strong>
-								{pricing.free_events_per_month} eventos ·{" "}
-								{pricing.free_claims_per_event} asist.
-							</strong>
+					<>
+						<p className={styles.muted}>
+							Gratis: {pricing.free_events_per_month} eventos al mes,{" "}
+							{attendeesLabel(pricing.free_claims_per_event)}. Token:{" "}
+							{tokenSymbol(pricing.token)}.
+						</p>
+						<div className={styles.field}>
+							Evento único
+							<div className={styles.statRow}>
+								{pricing.event_tiers.map((t) => (
+									<div key={t.max_attendees} className={styles.stat}>
+										<span>{attendeesLabel(t.max_attendees)}</span>
+										<strong>
+											{formatAmount(t.price, tokenSymbol(pricing.token))}
+										</strong>
+									</div>
+								))}
+							</div>
 						</div>
-						<div className={styles.stat}>
-							<span>Evento único</span>
-							<strong>{formatXlm(pricing.single_event_price)}</strong>
+						<div className={styles.field}>
+							Plan mensual
+							<div className={styles.statRow}>
+								{pricing.plan_tiers.map((t) => (
+									<div key={t.max_attendees} className={styles.stat}>
+										<span>{attendeesLabel(t.max_attendees)}</span>
+										<strong>
+											{formatAmount(t.price, tokenSymbol(pricing.token))}
+										</strong>
+									</div>
+								))}
+							</div>
 						</div>
-						<div className={styles.stat}>
-							<span>Plan mensual</span>
-							<strong>{formatXlm(pricing.monthly_price)}</strong>
-						</div>
-					</div>
+					</>
 				) : (
 					<p className={styles.muted}>Los cobros no están configurados.</p>
 				)}

@@ -90,8 +90,12 @@ export const BILLING_LABEL: Record<BillingKind, string> = {
 	[BillingKind.Single]: "Evento único",
 }
 
-/** Token amounts have 7 decimals: 10_000_000 = 1 XLM. */
-export const formatXlm = (amount: bigint | number) => {
+/** Token amounts have 7 decimals: 10_000_000 = 1 USDC (or 1 XLM). */
+export const formatAmount = (amount: bigint | number, symbol = "USDC") => {
 	const value = Number(amount) / 10_000_000
-	return `${value.toLocaleString("es", { maximumFractionDigits: 2 })} XLM`
+	return `${value.toLocaleString("es", { maximumFractionDigits: 2 })} ${symbol}`
 }
+
+/** "hasta 500 asistentes" */
+export const attendeesLabel = (max: number) =>
+	`hasta ${max.toLocaleString("es")} asistentes`
