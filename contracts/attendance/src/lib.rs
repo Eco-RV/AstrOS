@@ -27,7 +27,8 @@
 //! - **Moderation**: reports, hidden events/spaces and verified spaces. Only
 //!   events of verified spaces appear in the public listing.
 //! - **Billing**: a free monthly quota per space, then a monthly plan or a
-//!   one-off payment per event, in the token set by the admin (XLM on testnet).
+//!   one-off payment per event, both priced by attendee tiers, in the token
+//!   set by the admin (USDC).
 //!
 //! No personal data goes on-chain: a certificate name is stored only as a
 //! salted hash chosen by the attendee.
@@ -71,6 +72,8 @@ pub const APPROVAL_GRACE_SECS: u64 = 7 * 86_400;
 /// A billing month, and the longest subscription bought at once.
 pub const BILLING_MONTH_SECS: u64 = 30 * 86_400;
 pub const MAX_SUBSCRIBE_MONTHS: u32 = 12;
+/// Price tiers per list (events and plans).
+pub const MAX_TIERS: u32 = 6;
 
 // Persistent entries live ~30 days (in ledgers, ~5s each) after each write.
 const DAY_IN_LEDGERS: u32 = 17_280;
@@ -141,6 +144,10 @@ pub enum Error {
     PricingNotSet = 29,
     /// Puedes aprobar hasta 50 personas a la vez.
     BatchTooLarge = 30,
+    /// Ese número de asistentes supera el tramo más grande. Escríbenos para un plan a medida.
+    TooManyAttendees = 31,
+    /// Ese plan no existe.
+    InvalidTier = 32,
 }
 
 #[contracttype]
@@ -299,33 +306,64 @@ pub struct Attestation {
     pub at: u64,
 }
 
-/// Prices set by the admin. Amounts in the token's units (7 decimals).
+/// A price for events up to `max_attendees` attendees.
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PriceTier {
+    pub max_attendees: u32,
+    /// In the token's units (7 decimals: 10_000_000 = 1 USDC).
+    pub price: i128,
+}
+
+/// Prices set by the admin, paid in `token` (USDC in production).
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Pricing {
     pub token: Address,
     pub treasury: Address,
     pub free_events_per_month: u32,
-    /// 0 = no cap.
+    /// Attendee cap of a free event.
     pub free_claims_per_event: u32,
-    pub monthly_price: i128,
-    pub single_event_price: i128,
+    /// One-off event price by size, smallest first.
+    pub event_tiers: Vec<PriceTier>,
+    /// Monthly plan price by the size of each event it covers, smallest first.
+    pub plan_tiers: Vec<PriceTier>,
 }
 
-/// A space's plan and what its next event would cost.
+/// A space's monthly plan.
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SpacePlan {
+    /// Index into `Pricing.plan_tiers`.
+    pub tier: u32,
+    /// Events up to this size are covered.
+    pub max_attendees: u32,
+    pub paid_until: u64,
+}
+
+/// What creating an event with a given size would cost right now.
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Quote {
+    pub kind: BillingKind,
+    pub cost: i128,
+    /// The attendee cap the event will get.
+    pub max_claims: u32,
+}
+
+/// A space's plan and this month's free quota.
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct BillingStatus {
     pub pricing_set: bool,
-    pub paid_until: u64,
     pub plan_active: bool,
-    pub events_this_month: u32,
+    pub plan_tier: u32,
+    pub plan_max_attendees: u32,
+    pub paid_until: u64,
+    /// Free events used this month.
+    pub free_events_used: u32,
     pub free_events_per_month: u32,
     pub free_claims_per_event: u32,
-    pub monthly_price: i128,
-    pub single_event_price: i128,
-    pub next_event: BillingKind,
-    pub next_event_cost: i128,
 }
 
 /// An entry of the moderation queue.
@@ -387,9 +425,9 @@ enum DataKey {
     Requested(u32, Address),
     /// Pricing (instance)
     Pricing,
-    /// space id -> paid until (unix seconds)
-    SpacePlan(u32),
-    /// (space id, billing month) -> events created
+    /// space id -> SpacePlan
+    Plan(u32),
+    /// (space id, billing month) -> free events used
     SpaceUsage(u32, u32),
 }
 
@@ -863,35 +901,22 @@ impl Attendance {
             input.ends_at,
         )?;
 
-        // Billing.
-        let now = env.ledger().timestamp();
-        let month = (now / BILLING_MONTH_SECS) as u32;
-        let usage_key = DataKey::SpaceUsage(space_id, month);
-        let used: u32 = env.storage().persistent().get(&usage_key).unwrap_or(0);
-        let mut max_claims = input.max_claims;
-        let billing = match pricing_of(&env) {
-            None => BillingKind::Free,
-            Some(p) => {
-                if plan_until(&env, space_id) > now {
-                    BillingKind::Plan
-                } else if used < p.free_events_per_month {
-                    if p.free_claims_per_event > 0
-                        && (max_claims == 0 || max_claims > p.free_claims_per_event)
-                    {
-                        max_claims = p.free_claims_per_event;
-                    }
-                    BillingKind::Free
-                } else {
-                    token::TokenClient::new(&env, &p.token).transfer(
-                        &organizer,
-                        &p.treasury,
-                        &p.single_event_price,
-                    );
-                    BillingKind::Single
-                }
-            }
-        };
-        put(&env, &usage_key, &(used + 1));
+        // Billing: plan, free quota or a one-off payment by size.
+        let quote = quote_for(&env, space_id, input.max_claims)?;
+        if quote.cost > 0
+            && let Some(p) = pricing_of(&env)
+        {
+            token::TokenClient::new(&env, &p.token).transfer(&organizer, &p.treasury, &quote.cost);
+        }
+        // Only free events use up the monthly free quota.
+        if quote.kind == BillingKind::Free {
+            let month = (env.ledger().timestamp() / BILLING_MONTH_SECS) as u32;
+            let usage_key = DataKey::SpaceUsage(space_id, month);
+            let used: u32 = env.storage().persistent().get(&usage_key).unwrap_or(0);
+            put(&env, &usage_key, &(used + 1));
+        }
+        let max_claims = quote.max_claims;
+        let billing = quote.kind;
 
         let id = new_event(
             &env,
@@ -1261,10 +1286,11 @@ impl Attendance {
 
     // ── Billing ──
 
-    /// Set prices and the token they are paid in. Admin only.
+    /// Set prices and the token they are paid in. Admin only. Tier lists go
+    /// from the smallest size up, with prices above zero.
     pub fn set_pricing(env: Env, pricing: Pricing) -> Result<(), Error> {
         admin_of(&env).require_auth();
-        if pricing.monthly_price <= 0 || pricing.single_event_price <= 0 {
+        if !valid_tiers(&pricing.event_tiers) || !valid_tiers(&pricing.plan_tiers) {
             return Err(Error::InvalidPricing);
         }
         let instance = env.storage().instance();
@@ -1277,23 +1303,46 @@ impl Attendance {
         pricing_of(&env)
     }
 
-    /// Pay `months` of the monthly plan for a space (anyone can pay for it).
+    /// What creating an event of `max_claims` attendees (0 = as many as the
+    /// plan or tier allows) would cost for this space right now.
+    pub fn quote_event(env: Env, space_id: u32, max_claims: u32) -> Result<Quote, Error> {
+        load_space(&env, space_id)?;
+        quote_for(&env, space_id, max_claims)
+    }
+
+    /// Pay `months` of the monthly plan `tier` for a space (anyone can pay for
+    /// it). Time adds to an active plan; the tier becomes the new one.
     /// Returns the new end date.
-    pub fn subscribe(env: Env, payer: Address, space_id: u32, months: u32) -> Result<u64, Error> {
+    pub fn subscribe(
+        env: Env,
+        payer: Address,
+        space_id: u32,
+        tier: u32,
+        months: u32,
+    ) -> Result<u64, Error> {
         payer.require_auth();
         if months == 0 || months > MAX_SUBSCRIBE_MONTHS {
             return Err(Error::InvalidMonths);
         }
         load_space(&env, space_id)?;
         let p = pricing_of(&env).ok_or(Error::PricingNotSet)?;
+        let chosen = p.plan_tiers.get(tier).ok_or(Error::InvalidTier)?;
         token::TokenClient::new(&env, &p.token).transfer(
             &payer,
             &p.treasury,
-            &(p.monthly_price * months as i128),
+            &(chosen.price * months as i128),
         );
         let now = env.ledger().timestamp();
-        let paid_until = plan_until(&env, space_id).max(now) + months as u64 * BILLING_MONTH_SECS;
-        put(&env, &DataKey::SpacePlan(space_id), &paid_until);
+        let current = plan_of(&env, space_id)
+            .map(|plan| plan.paid_until)
+            .unwrap_or(0);
+        let paid_until = current.max(now) + months as u64 * BILLING_MONTH_SECS;
+        let plan = SpacePlan {
+            tier,
+            max_attendees: chosen.max_attendees,
+            paid_until,
+        };
+        put(&env, &DataKey::Plan(space_id), &plan);
         Subscribed {
             space_id,
             paid_until,
@@ -1302,7 +1351,7 @@ impl Attendance {
         Ok(paid_until)
     }
 
-    /// The space's plan, this month's usage and what the next event costs.
+    /// The space's plan and this month's free quota.
     pub fn space_billing(env: Env, space_id: u32) -> BillingStatus {
         let now = env.ledger().timestamp();
         let month = (now / BILLING_MONTH_SECS) as u32;
@@ -1311,42 +1360,21 @@ impl Attendance {
             .persistent()
             .get(&DataKey::SpaceUsage(space_id, month))
             .unwrap_or(0);
-        let paid_until = plan_until(&env, space_id);
-        let plan_active = paid_until > now;
-        match pricing_of(&env) {
-            None => BillingStatus {
-                pricing_set: false,
-                paid_until,
-                plan_active,
-                events_this_month: used,
-                free_events_per_month: 0,
-                free_claims_per_event: 0,
-                monthly_price: 0,
-                single_event_price: 0,
-                next_event: BillingKind::Free,
-                next_event_cost: 0,
-            },
-            Some(p) => {
-                let (next_event, next_event_cost) = if plan_active {
-                    (BillingKind::Plan, 0)
-                } else if used < p.free_events_per_month {
-                    (BillingKind::Free, 0)
-                } else {
-                    (BillingKind::Single, p.single_event_price)
-                };
-                BillingStatus {
-                    pricing_set: true,
-                    paid_until,
-                    plan_active,
-                    events_this_month: used,
-                    free_events_per_month: p.free_events_per_month,
-                    free_claims_per_event: p.free_claims_per_event,
-                    monthly_price: p.monthly_price,
-                    single_event_price: p.single_event_price,
-                    next_event,
-                    next_event_cost,
-                }
-            }
+        let plan = plan_of(&env, space_id);
+        let plan_active = plan.as_ref().is_some_and(|p| p.paid_until > now);
+        let pricing = pricing_of(&env);
+        BillingStatus {
+            pricing_set: pricing.is_some(),
+            plan_active,
+            plan_tier: plan.as_ref().map(|p| p.tier).unwrap_or(0),
+            plan_max_attendees: plan.as_ref().map(|p| p.max_attendees).unwrap_or(0),
+            paid_until: plan.map(|p| p.paid_until).unwrap_or(0),
+            free_events_used: used,
+            free_events_per_month: pricing
+                .as_ref()
+                .map(|p| p.free_events_per_month)
+                .unwrap_or(0),
+            free_claims_per_event: pricing.map(|p| p.free_claims_per_event).unwrap_or(0),
         }
     }
 }
@@ -1649,11 +1677,84 @@ fn pricing_of(env: &Env) -> Option<Pricing> {
     env.storage().instance().get(&DataKey::Pricing)
 }
 
-fn plan_until(env: &Env, space_id: u32) -> u64 {
-    env.storage()
+fn plan_of(env: &Env, space_id: u32) -> Option<SpacePlan> {
+    env.storage().persistent().get(&DataKey::Plan(space_id))
+}
+
+/// Tiers go from the smallest size up, with sizes and prices above zero.
+fn valid_tiers(tiers: &Vec<PriceTier>) -> bool {
+    if tiers.is_empty() || tiers.len() > MAX_TIERS {
+        return false;
+    }
+    let mut previous = 0;
+    for tier in tiers.iter() {
+        if tier.price <= 0 || tier.max_attendees <= previous {
+            return false;
+        }
+        previous = tier.max_attendees;
+    }
+    true
+}
+
+/// How an event of `requested` attendees (0 = the most allowed) is paid:
+/// 1. an active plan covers events up to its size;
+/// 2. the free quota covers small events (up to `free_claims_per_event`);
+/// 3. otherwise the smallest event tier that fits is paid once.
+fn quote_for(env: &Env, space_id: u32, requested: u32) -> Result<Quote, Error> {
+    let Some(p) = pricing_of(env) else {
+        return Ok(Quote {
+            kind: BillingKind::Free,
+            cost: 0,
+            max_claims: requested,
+        });
+    };
+    let now = env.ledger().timestamp();
+    if let Some(plan) = plan_of(env, space_id)
+        && plan.paid_until > now
+        && requested <= plan.max_attendees
+    {
+        return Ok(Quote {
+            kind: BillingKind::Plan,
+            cost: 0,
+            max_claims: if requested == 0 {
+                plan.max_attendees
+            } else {
+                requested
+            },
+        });
+    }
+    let month = (now / BILLING_MONTH_SECS) as u32;
+    let used: u32 = env
+        .storage()
         .persistent()
-        .get(&DataKey::SpacePlan(space_id))
-        .unwrap_or(0)
+        .get(&DataKey::SpaceUsage(space_id, month))
+        .unwrap_or(0);
+    if used < p.free_events_per_month && requested <= p.free_claims_per_event {
+        return Ok(Quote {
+            kind: BillingKind::Free,
+            cost: 0,
+            max_claims: if requested == 0 {
+                p.free_claims_per_event
+            } else {
+                requested
+            },
+        });
+    }
+    let tier = if requested == 0 {
+        p.event_tiers.last()
+    } else {
+        p.event_tiers.iter().find(|t| t.max_attendees >= requested)
+    }
+    .ok_or(Error::TooManyAttendees)?;
+    Ok(Quote {
+        kind: BillingKind::Single,
+        cost: tier.price,
+        max_claims: if requested == 0 {
+            tier.max_attendees
+        } else {
+            requested
+        },
+    })
 }
 
 mod test;

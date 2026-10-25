@@ -607,84 +607,130 @@ fn reports_are_counted_once_per_account() {
 }
 
 #[test]
-fn billing_free_quota_then_single_payment_or_plan() {
+fn billing_by_attendee_tiers() {
     let (env, client, admin) = setup_with_admin();
     let owner = Address::generate(&env);
     let treasury = Address::generate(&env);
     let sid = space(&env, &client, &owner, "barberia");
 
+    // The token stands in for USDC (7 decimals).
     let sac = env.register_stellar_asset_contract_v2(admin.clone());
-    let xlm = TokenClient::new(&env, &sac.address());
-    StellarAssetClient::new(&env, &sac.address()).mint(&owner, &(200 * XLM));
+    let usdc = TokenClient::new(&env, &sac.address());
+    StellarAssetClient::new(&env, &sac.address()).mint(&owner, &(1_000 * XLM));
 
     // Without prices everything is free and uncapped.
     assert!(!client.space_billing(&sid).pricing_set);
+    assert_eq!(client.quote_event(&sid, &5_000).cost, 0);
     assert_eq!(
-        client.try_subscribe(&owner, &sid, &1),
+        client.try_subscribe(&owner, &sid, &0, &1),
         Err(Ok(Error::PricingNotSet))
     );
 
+    let tier = |max: u32, price: i128| PriceTier {
+        max_attendees: max,
+        price: price * XLM,
+    };
+    let mut event_tiers = SVec::new(&env);
+    event_tiers.push_back(tier(500, 45));
+    event_tiers.push_back(tier(100, 15)); // out of order
+    let mut plan_tiers = SVec::new(&env);
+    plan_tiers.push_back(tier(100, 39));
+    plan_tiers.push_back(tier(500, 99));
     let mut pricing = Pricing {
         token: sac.address(),
         treasury: treasury.clone(),
         free_events_per_month: 2,
         free_claims_per_event: 50,
-        monthly_price: 0,
-        single_event_price: 10 * XLM,
+        event_tiers,
+        plan_tiers,
     };
     assert_eq!(
         client.try_set_pricing(&pricing),
         Err(Ok(Error::InvalidPricing))
     );
-    pricing.monthly_price = 50 * XLM;
+    let mut event_tiers = SVec::new(&env);
+    event_tiers.push_back(tier(100, 15));
+    event_tiers.push_back(tier(500, 45));
+    event_tiers.push_back(tier(2_000, 120));
+    pricing.event_tiers = event_tiers;
     client.set_pricing(&pricing);
     assert_eq!(env.auths()[0].0, admin);
 
-    // Two free events, capped at 50 attendees.
-    let first =
-        client.create_event_v2(&owner, &sid, &input(&env, ProofMode::CheckInStaff, None, 0));
-    assert_eq!(client.get_event(&first).max_claims, 50);
+    // A small event uses the free quota and is capped at 50 attendees.
+    let free = client.create_event_v2(&owner, &sid, &input(&env, ProofMode::CheckInStaff, None, 0));
+    assert_eq!(client.get_event(&free).max_claims, 50);
+    // A 300-person event pays the 500 tier even with free quota left.
+    let quote = client.quote_event(&sid, &300);
+    assert_eq!(
+        (quote.kind, quote.cost, quote.max_claims),
+        (BillingKind::Single, 45 * XLM, 300)
+    );
+    let big = client.create_event_v2(
+        &owner,
+        &sid,
+        &input(&env, ProofMode::CheckInStaff, None, 300),
+    );
+    assert_eq!(usdc.balance(&treasury), 45 * XLM);
+    assert_eq!(client.get_event(&big).max_claims, 300);
+    // Second free event, then the quota is used up.
     client.create_event_v2(
         &owner,
         &sid,
-        &input(&env, ProofMode::CheckInStaff, None, 20),
+        &input(&env, ProofMode::CheckInStaff, None, 30),
     );
-    let status = client.space_billing(&sid);
-    assert_eq!(status.events_this_month, 2);
-    assert_eq!(status.next_event, BillingKind::Single);
-    assert_eq!(status.next_event_cost, 10 * XLM);
-
-    // The third one is paid once, in the same signature, and isn't capped.
-    let third =
-        client.create_event_v2(&owner, &sid, &input(&env, ProofMode::CheckInStaff, None, 0));
-    assert_eq!(xlm.balance(&treasury), 10 * XLM);
-    assert_eq!(client.get_event(&third).max_claims, 0);
+    assert_eq!(client.space_billing(&sid).free_events_used, 2);
+    let quote = client.quote_event(&sid, &30);
+    assert_eq!((quote.kind, quote.cost), (BillingKind::Single, 15 * XLM));
+    // Over the largest tier there is no self-service price.
     assert_eq!(
-        client.get_event_v2(&third).meta.get(0).unwrap().billing,
-        BillingKind::Single
+        client.try_quote_event(&sid, &2_001),
+        Err(Ok(Error::TooManyAttendees))
+    );
+    assert_eq!(
+        client.try_create_event_v2(
+            &owner,
+            &sid,
+            &input(&env, ProofMode::CheckInStaff, None, 2_001)
+        ),
+        Err(Ok(Error::TooManyAttendees))
     );
 
-    // The monthly plan covers the rest.
+    // The monthly plan covers events up to its tier, for free.
     assert_eq!(
-        client.try_subscribe(&owner, &sid, &13),
+        client.try_subscribe(&owner, &sid, &9, &1),
+        Err(Ok(Error::InvalidTier))
+    );
+    assert_eq!(
+        client.try_subscribe(&owner, &sid, &0, &13),
         Err(Ok(Error::InvalidMonths))
     );
-    let until = client.subscribe(&owner, &sid, &2);
+    let until = client.subscribe(&owner, &sid, &0, &2);
     assert_eq!(until, NOW + 2 * BILLING_MONTH_SECS);
-    assert_eq!(xlm.balance(&treasury), 110 * XLM);
+    assert_eq!(usdc.balance(&treasury), (45 + 78) * XLM);
+    let status = client.space_billing(&sid);
+    assert!(status.plan_active);
+    assert_eq!(status.plan_max_attendees, 100);
     let planned =
         client.create_event_v2(&owner, &sid, &input(&env, ProofMode::CheckInStaff, None, 0));
+    assert_eq!(client.get_event(&planned).max_claims, 100);
     assert_eq!(
         client.get_event_v2(&planned).meta.get(0).unwrap().billing,
         BillingKind::Plan
     );
-    assert_eq!(xlm.balance(&treasury), 110 * XLM);
-    assert!(client.space_billing(&sid).plan_active);
+    // Bigger than the plan: that event pays its tier.
+    let quote = client.quote_event(&sid, &400);
+    assert_eq!((quote.kind, quote.cost), (BillingKind::Single, 45 * XLM));
 
-    // A new month resets the free quota once the plan is over.
-    env.ledger().set_timestamp(NOW + 3 * BILLING_MONTH_SECS);
+    // Upgrading adds time and switches the tier.
+    let until = client.subscribe(&owner, &sid, &1, &1);
+    assert_eq!(until, NOW + 3 * BILLING_MONTH_SECS);
+    assert_eq!(client.space_billing(&sid).plan_max_attendees, 500);
+    assert_eq!(client.quote_event(&sid, &400).kind, BillingKind::Plan);
+
+    // A new month after the plan ends: free quota again.
+    env.ledger().set_timestamp(NOW + 4 * BILLING_MONTH_SECS);
     let status = client.space_billing(&sid);
     assert!(!status.plan_active);
-    assert_eq!(status.events_this_month, 0);
-    assert_eq!(status.next_event, BillingKind::Free);
+    assert_eq!(status.free_events_used, 0);
+    assert_eq!(client.quote_event(&sid, &0).kind, BillingKind::Free);
 }
