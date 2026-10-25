@@ -50,6 +50,9 @@ export const CavosRoot = ({ children }: { children: ReactNode }) => {
 	)
 }
 
+/** Where to go back to after signing in from a page other than "/". */
+export const RETURN_KEY = "astros:return-after-login"
+
 const CavosBridge = ({ children }: { children: ReactNode }) => {
 	const cavos = useCavos()
 	const wallet = cavos.wallet?.chain === "stellar" ? cavos.wallet : null
@@ -63,7 +66,22 @@ const CavosBridge = ({ children }: { children: ReactNode }) => {
 			email: cavos.user?.email,
 			needsDeviceApproval,
 			error: cavos.authError,
-			signIn: cavos.openModal,
+			signIn: () => {
+				// The @cavos/kit 0.4.2 Google login sends the current page as its
+				// redirect, and only the site root is registered in the Cavos
+				// dashboard. Sign in from "/" and come back here afterwards
+				// (EntryGate reads RETURN_KEY).
+				const here = window.location.pathname + window.location.search
+				if (here !== "/") {
+					try {
+						sessionStorage.setItem(RETURN_KEY, here)
+					} catch {
+						// Storage blocked: the user just lands on the home page.
+					}
+					window.history.replaceState(null, "", "/")
+				}
+				cavos.openModal()
+			},
 			signOut: cavos.logout,
 			approveDevice: cavos.approveDeviceWithPasskey,
 			addPasskey:
