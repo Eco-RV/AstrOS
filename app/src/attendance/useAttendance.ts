@@ -112,6 +112,12 @@ function friendlyError(e: unknown): string {
 	if (/account not found|resource missing|not found: .*account/i.test(msg))
 		return "Tu cuenta todavía no tiene XLM de prueba: espera a que termine la carga (o pídelos desde tu perfil) y vuelve a intentarlo."
 	if (/rejected|declined|cancel/i.test(msg)) return "Cancelaste la firma."
+	// claim_v2: the rotating-QR signature didn't verify (tampered or old key).
+	if (/ed25519|signature.*(invalid|verif)|Crypto, InvalidInput/i.test(msg))
+		return "El código QR no es válido. Escanea el QR que se proyecta ahora en el evento."
+	// The one-off event payment or the plan: not enough XLM.
+	if (/balance|insufficient|underfunded/i.test(msg))
+		return "No tienes XLM de prueba suficiente para este pago. Pide más desde tu perfil."
 	return msg
 }
 
