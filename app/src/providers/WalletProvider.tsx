@@ -4,6 +4,7 @@ import {
 	type MappedBalances,
 	networkPassphrase as appNetworkPassphrase,
 	onWalletChange,
+	shortAddress,
 	signTransaction as extensionSignTransaction,
 } from "@stellar-scaffold/app-lib"
 import { createContext, useCallback, useEffect, useMemo, useState } from "react"
@@ -81,8 +82,33 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 	const networkPassphrase = cavosActive
 		? appNetworkPassphrase
 		: extensionPassphrase
+	// Extension wallets can switch account or network inside the extension
+	// without telling the app: check both before anything reaches the network,
+	// or it fails there with `txBadAuth`.
+	const extensionSign: SignTransactionFn = useCallback(
+		async (xdr, opts) => {
+			if (extensionPassphrase && extensionPassphrase !== appNetworkPassphrase)
+				throw new Error(
+					"Tu wallet está en otra red. Cámbiala a Testnet para continuar.",
+				)
+			const result = await extensionSignTransaction(xdr, {
+				...opts,
+				address: extensionAddress,
+			})
+			if (
+				extensionAddress &&
+				result.signerAddress &&
+				result.signerAddress !== extensionAddress
+			)
+				throw new Error(
+					`Tu wallet firmó con otra cuenta (${shortAddress(result.signerAddress)}). En tu wallet elige la cuenta ${shortAddress(extensionAddress)}, o usa “Cambiar de wallet” en tu perfil.`,
+				)
+			return result
+		},
+		[extensionAddress, extensionPassphrase],
+	)
 	const signTransaction: SignTransactionFn =
-		cavosActive && cavosSign ? cavosSign : extensionSignTransaction
+		cavosActive && cavosSign ? cavosSign : extensionSign
 
 	const updateBalances = useCallback(async () => {
 		if (!address) {

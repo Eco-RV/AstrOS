@@ -5,6 +5,7 @@ import {
 	type SubscriptionEvent,
 } from "@stellar-scaffold/app-lib"
 import { attendance } from "@stellar-scaffold/app-lib/clients"
+import { ProofMode } from "attendance"
 import { useEffect, useRef, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { BadgeArt } from "../attendance/BadgeArt"
@@ -18,6 +19,9 @@ import {
 } from "../attendance/useAttendance"
 import { Blueprint } from "../brand/Blueprint"
 import { Wordmark } from "../brand/Logo"
+import { hasEventKey, toHex } from "../proof/eventKey"
+import { RotatingQr } from "../proof/ProofUi"
+import { metaOf, useEventView } from "../spaces/useSaas"
 
 interface Claim {
 	key: string
@@ -70,6 +74,15 @@ const Projector = () => {
 	const [stars, setStars] = useState<ShootingStar[]>([])
 	const lastCount = useRef<number>(undefined)
 	const nextStar = useRef(0)
+	// Events with the rotating QR project a signed code instead of the link.
+	const { data: view } = useEventView(eventId)
+	const meta = metaOf(view)
+	const rotating = meta?.proof === ProofMode.QrRotativo
+	const keyHex = meta?.event_key ? toHex(meta.event_key) : undefined
+	const [keyHere, setKeyHere] = useState<boolean>()
+	useEffect(() => {
+		if (keyHex) void hasEventKey(keyHex).then(setKeyHere)
+	}, [keyHex])
 
 	// Who claimed: contract events, polled every 3 s.
 	useEffect(
@@ -156,9 +169,27 @@ const Projector = () => {
 
 			<main className={styles.stage}>
 				<section className={styles.qrSide}>
-					<QrCode value={url} />
+					{rotating ? (
+						keyHex && keyHere ? (
+							<RotatingQr eventId={eventId} publicKeyHex={keyHex} />
+						) : (
+							<p className={styles.warning}>
+								Este dispositivo no tiene la llave del QR rotativo.{" "}
+								<Link to={`/organizar/evento/${eventId}`}>
+									Crea una desde la consola
+								</Link>{" "}
+								para proyectar aquí.
+							</p>
+						)
+					) : (
+						<QrCode value={url} />
+					)}
 					<p className={styles.scan}>Escanea con la cámara de tu celular</p>
-					<code className={styles.url}>{url.replace(/^https?:\/\//, "")}</code>
+					{!rotating && (
+						<code className={styles.url}>
+							{url.replace(/^https?:\/\//, "")}
+						</code>
+					)}
 					{isLocalhost && (
 						<p className={styles.warning}>
 							Este QR apunta a <strong>localhost</strong>: los celulares no lo

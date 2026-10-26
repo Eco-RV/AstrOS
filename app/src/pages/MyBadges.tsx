@@ -20,6 +20,9 @@ import { useWallet } from "../hooks/useWallet"
 import { explorerContract } from "../lib/explorer"
 import { useReveal } from "../motion/motion"
 import { RiseText } from "../motion/RiseText"
+import { certificatePath } from "../proof/certificate"
+import { MyAttendanceQr } from "../proof/ProofUi"
+import saas from "../spaces/saas.module.css"
 
 /** Contract limit (MAX_BADGES_PER_OWNER in contracts/attendance). */
 const MAX_BADGES = 100
@@ -67,6 +70,13 @@ const MyBadges = () => {
 				organized={organized}
 				loading={isLoading}
 			/>
+
+			{address && (
+				<details className={saas.card}>
+					<summary>Mi QR de asistencia (para el check-in)</summary>
+					<MyAttendanceQr address={address} />
+				</details>
+			)}
 
 			{isLoading ? (
 				<div className={styles.skeleton} style={{ height: 260 }} />
@@ -392,6 +402,13 @@ const FlipBadge = ({
 					<span className={styles.flipNumber}>#{badge.number}</span>
 					<strong>{badge.event_name}</strong>
 					<span>{date}</span>
+					<Link
+						to={certificatePath(badge.event_id, badge.owner)}
+						onClick={(e) => e.stopPropagation()}
+						tabIndex={flipped ? 0 : -1}
+					>
+						Certificado
+					</Link>
 					<Link
 						to={`/evento/${badge.event_id}`}
 						onClick={(e) => e.stopPropagation()}

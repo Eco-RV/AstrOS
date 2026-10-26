@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom"
+import { SpaceChip } from "../spaces/SpaceUi"
+import { type Space } from "../spaces/useSaas"
 import styles from "./attendance.module.css"
 import { EventArt } from "./EventArt"
 import {
@@ -91,9 +93,12 @@ export const GroupHead = ({
 export const QuestCard = ({
 	event,
 	owned,
+	space,
 }: {
 	event: AttendanceEvent
 	owned: boolean
+	/** The space it belongs to (events v2). */
+	space?: Space
 }) => {
 	const status = eventStatus(event)
 	const state = questState(status, owned)
@@ -116,7 +121,11 @@ export const QuestCard = ({
 			<div className={styles.questBody}>
 				<div className={styles.questMeta}>
 					<StateChip state={state} status={status} />
-					<span>Evento #{event.id}</span>
+					{space ? (
+						<SpaceChip space={space} />
+					) : (
+						<span>Evento #{event.id}</span>
+					)}
 				</div>
 				<h3>
 					<Link to={to}>{event.name}</Link>

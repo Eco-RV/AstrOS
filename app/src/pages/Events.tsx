@@ -1,3 +1,5 @@
+import { type Category } from "attendance"
+import { useState } from "react"
 import { Link } from "react-router-dom"
 import styles from "../attendance/attendance.module.css"
 import { Bauhaus } from "../attendance/Bauhaus"
@@ -8,25 +10,23 @@ import {
 	type QuestState,
 	questState,
 } from "../attendance/Quest"
-import {
-	type AttendanceEvent,
-	eventStatus,
-	useBadgesOf,
-	useEvent,
-	useLatestEvents,
-} from "../attendance/useAttendance"
+import { eventStatus, useBadgesOf } from "../attendance/useAttendance"
 import { Seal } from "../brand/Logo"
 import { SideIndex } from "../components/SideIndex"
 import { Ticker } from "../components/Ticker"
 import { useWallet } from "../hooks/useWallet"
 import { useMagnetic, useReveal } from "../motion/motion"
 import { RiseText } from "../motion/RiseText"
-
-const featuredRaw = import.meta.env.PUBLIC_FEATURED_EVENT_ID as
-	| string
-	| undefined
-const FEATURED_ID =
-	featuredRaw && /^\d+$/.test(featuredRaw) ? Number(featuredRaw) : undefined
+import { CATEGORIES } from "../spaces/catalog"
+import saas from "../spaces/saas.module.css"
+import { SpaceCard } from "../spaces/SpaceUi"
+import {
+	type EventView,
+	metaOf,
+	type Space,
+	useLatestSpaces,
+	usePublicEvents,
+} from "../spaces/useSaas"
 
 const GROUPS: { state: QuestState; title: string }[] = [
 	{ state: "live", title: "En curso" },
@@ -38,31 +38,38 @@ const GROUPS: { state: QuestState; title: string }[] = [
 const SECTIONS = [
 	{ id: "inicio", label: "Inicio" },
 	{ id: "misiones", label: "Misiones" },
+	{ id: "espacios", label: "Espacios" },
 	{ id: "organiza", label: "Organiza" },
 ]
 
+/**
+ * Public home: only events of spaces verified by a moderator, filterable by
+ * category, plus the verified spaces themselves.
+ */
 const Events = () => {
 	const { address } = useWallet()
-	const { data: events, isLoading, error } = useLatestEvents()
+	const { data: events, isLoading, error } = usePublicEvents()
+	const { data: spaces } = useLatestSpaces(true)
 	const { data: badges } = useBadgesOf(address)
-	const { data: featured } = useEvent(
-		FEATURED_ID ?? -1,
-		FEATURED_ID !== undefined,
-	)
+	const [category, setCategory] = useState<Category | "all">("all")
 	const heroRef = useReveal<HTMLElement>()
 	const ctaRef = useReveal<HTMLElement>()
 	const magnetic = useMagnetic<HTMLAnchorElement>(0.25)
 
+	const spaceById = new Map(spaces?.map((s) => [s.id, s]))
 	const owned = new Set(badges?.map((b) => b.event_id))
+	const inCategory = (v: EventView) =>
+		category === "all" || metaOf(v)?.category === category
+	const visible = events?.filter(inCategory) ?? []
 	const byState = (state: QuestState) =>
-		events?.filter(
-			(e) =>
-				e.id !== featured?.id &&
-				questState(eventStatus(e), owned.has(e.id)) === state,
-		) ?? []
-	const live = events?.filter((e) => eventStatus(e) === "open").length ?? 0
-	// Hero art: the featured event, else the most recent one with a photo.
-	const heroEvent = featured ?? events?.find((e) => e.image_url) ?? events?.[0]
+		visible.filter(
+			(v) => questState(eventStatus(v.event), owned.has(v.event.id)) === state,
+		)
+	const live =
+		events?.filter((v) => eventStatus(v.event) === "open").length ?? 0
+	const heroEvent = events?.find((v) => v.event.image_url) ?? events?.[0]
+	const shownSpaces =
+		spaces?.filter((s) => category === "all" || s.category === category) ?? []
 
 	return (
 		<div className={styles.page}>
@@ -71,14 +78,19 @@ const Events = () => {
 			<section id="inicio" ref={heroRef} className={`grid ${styles.hero}`}>
 				<div className={`cell ${styles.heroArt}`}>
 					{heroEvent ? (
-						<Link to={`/evento/${heroEvent.id}`} className={styles.heroArtLink}>
+						<Link
+							to={`/evento/${heroEvent.event.id}`}
+							className={styles.heroArtLink}
+						>
 							<EventArt
-								eventId={heroEvent.id}
-								name={heroEvent.name}
-								imageUrl={heroEvent.image_url}
+								eventId={heroEvent.event.id}
+								name={heroEvent.event.name}
+								imageUrl={heroEvent.event.image_url}
 								medalSize={180}
 							/>
-							<span className={styles.heroCaption}>{heroEvent.name} ↗</span>
+							<span className={styles.heroCaption}>
+								{heroEvent.event.name} ↗
+							</span>
 						</Link>
 					) : (
 						<div className={styles.heroSeal}>
@@ -89,7 +101,11 @@ const Events = () => {
 				</div>
 				<div className={`cell ${styles.rail}`}>
 					<RailWord word="Stellar" />
-					<RailWord word="Testnet" />
+					{spaces && (
+						<RailWord
+							word={`${String(spaces.length).padStart(2, "0")} espacios`}
+						/>
+					)}
 					{events && (
 						<RailWord
 							word={`${String(live).padStart(2, "0")} en curso`}
@@ -107,9 +123,9 @@ const Events = () => {
 				<div className={`cell ${styles.heroLead}`}>
 					<span className="kicker">Tu constelación de eventos</span>
 					<p>
-						Reclama la insignia de los eventos a los que asistes. Queda a tu
-						nombre en la blockchain de Stellar: nadie te la puede quitar y
-						cualquiera puede verificarla.
+						Asiste, reclama tu insignia y llévate un certificado que cualquiera
+						puede verificar. Universidades, empresas, comunidades y negocios dan
+						fe de tu asistencia en la blockchain de Stellar.
 					</p>
 				</div>
 				<div className={`cell ${styles.heroAction}`}>
@@ -120,7 +136,7 @@ const Events = () => {
 			</section>
 
 			{events && events.length > 0 && (
-				<Ticker words={events.slice(0, 8).map((e) => e.name)} />
+				<Ticker words={events.slice(0, 8).map((v) => v.event.name)} />
 			)}
 
 			<section id="misiones" className="slab">
@@ -130,25 +146,39 @@ const Events = () => {
 							<span className="chapter" aria-hidden>
 								01
 							</span>
-							<span className="kicker">Eventos de la comunidad</span>
+							<span className="kicker">Espacios verificados</span>
 							<h2 className="title">Misiones</h2>
 						</div>
 						<p>
-							Cada evento es una misión: asiste, reclama su insignia y queda en
-							tu wallet para siempre.
+							Solo se muestran eventos de espacios que AstrOS verificó. Cada uno
+							dice cómo se comprueba la asistencia.
 						</p>
 					</header>
 
-					<div className={styles.groups}>
-						{featured && (
-							<section className={styles.group}>
-								<GroupHead title="Destacada" count={1} state="soon" />
-								<div className={styles.quests}>
-									<QuestCard event={featured} owned={owned.has(featured.id)} />
-								</div>
-							</section>
-						)}
+					<div
+						className={saas.filters}
+						role="group"
+						aria-label="Categoría"
+						style={{ marginBottom: "2rem" }}
+					>
+						<button
+							aria-pressed={category === "all"}
+							onClick={() => setCategory("all")}
+						>
+							Todas
+						</button>
+						{CATEGORIES.map((c) => (
+							<button
+								key={c.id}
+								aria-pressed={category === c.id}
+								onClick={() => setCategory(c.id)}
+							>
+								{c.label}
+							</button>
+						))}
+					</div>
 
+					<div className={styles.groups}>
 						{isLoading && (
 							<div className={styles.quests}>
 								{[0, 1, 2].map((i) => (
@@ -162,16 +192,21 @@ const Events = () => {
 								conexión y recarga la página. ({error.message})
 							</p>
 						)}
-						{events && events.length === 0 && (
+						{events && visible.length === 0 && (
 							<div className={styles.empty}>
 								<Bauhaus seed={1} size={120} />
 								<div>
-									<strong>Aún no hay misiones</strong>
+									<strong>
+										{events.length === 0
+											? "Todavía no hay espacios verificados con eventos"
+											: "No hay eventos en esta categoría"}
+									</strong>
 									<span>
-										Crea el primer evento y comparte su enlace con tu grupo.
+										Crea el espacio de tu negocio y tus primeros eventos. Un
+										moderador lo verifica para mostrarlo aquí.
 									</span>
-									<Link to="/crear" className="btn btn-primary">
-										Crear evento
+									<Link to="/organizar" className="btn btn-primary">
+										Crear mi espacio
 									</Link>
 								</div>
 							</div>
@@ -184,32 +219,60 @@ const Events = () => {
 								title={title}
 								events={byState(state)}
 								owned={owned}
+								spaces={spaceById}
 							/>
 						))}
 					</div>
 				</div>
 			</section>
 
+			<section id="espacios" className={saas.page}>
+				<header className="section-head">
+					<div>
+						<span className="chapter" aria-hidden>
+							02
+						</span>
+						<span className="kicker">Quién organiza</span>
+						<h2 className="title">Espacios</h2>
+					</div>
+					<p>
+						Negocios, universidades y comunidades con su propio espacio dentro
+						de AstrOS.
+					</p>
+				</header>
+				{shownSpaces.length === 0 ? (
+					<p className={saas.muted}>
+						Todavía no hay espacios verificados en esta categoría.
+					</p>
+				) : (
+					<div className={saas.cards}>
+						{shownSpaces.map((s) => (
+							<SpaceCard key={s.id} space={s} />
+						))}
+					</div>
+				)}
+			</section>
+
 			<section id="organiza" ref={ctaRef} className={styles.cta}>
 				<span className="chapter" aria-hidden>
-					02
+					03
 				</span>
 				<div>
-					<h2 className="title">¿Organizas un evento?</h2>
+					<h2 className="title">¿Organizas eventos?</h2>
 					<p>
-						Crea la misión en un minuto: tus asistentes reclaman la insignia
-						desde el celular con un QR.
+						Crea el espacio de tu negocio, elige cómo comprobar la asistencia y
+						entrega insignias y certificados verificables. Gratis para empezar.
 					</p>
 				</div>
-				<Link to="/crear" className="btn btn-dark">
-					Crear evento
+				<Link to="/organizar" className="btn btn-dark">
+					Crear mi espacio
 				</Link>
 			</section>
 		</div>
 	)
 }
 
-/** Status rail word: outlined, fills with signal on hover. */
+/** Status rail word, outlined. */
 const RailWord = ({ word, live = false }: { word: string; live?: boolean }) => (
 	<div className={styles.railItem}>
 		<span className={`${styles.railNode} ${live ? styles.railLive : ""}`} />
@@ -222,11 +285,13 @@ const QuestGroup = ({
 	title,
 	events,
 	owned,
+	spaces,
 }: {
 	state: QuestState
 	title: string
-	events: AttendanceEvent[]
+	events: EventView[]
 	owned: Set<number>
+	spaces: Map<number, Space>
 }) => {
 	const ref = useReveal<HTMLElement>()
 	if (events.length === 0) return null
@@ -234,9 +299,17 @@ const QuestGroup = ({
 		<section ref={ref} className={styles.group} id={`grupo-${state}`}>
 			<GroupHead title={title} count={events.length} state={state} />
 			<div className={styles.quests}>
-				{events.map((event) => (
-					<QuestCard key={event.id} event={event} owned={owned.has(event.id)} />
-				))}
+				{events.map((v) => {
+					const meta = metaOf(v)
+					return (
+						<QuestCard
+							key={v.event.id}
+							event={v.event}
+							owned={owned.has(v.event.id)}
+							space={meta ? spaces.get(meta.space_id) : undefined}
+						/>
+					)
+				})}
 			</div>
 		</section>
 	)
