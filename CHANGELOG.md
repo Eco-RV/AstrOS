@@ -3,7 +3,7 @@
 Formato: una sección por versión (`## x.y.z — AAAA-MM-DD`, o `— sin publicar`
 mientras se desarrolla). Flujo completo en [docs/FLUJO.md](docs/FLUJO.md).
 
-## 2.0.1 — sin publicar
+## 2.0.1 — 2026-10-25
 
 Rediseño visual completo con el sistema visual común de las apps de Oswald
 (`design-system.md`: estructura de Stellar Apex, energía de Zenless Zone Zero) y
