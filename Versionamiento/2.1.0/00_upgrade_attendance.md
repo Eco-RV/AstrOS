@@ -52,4 +52,6 @@ Debe devolver `[]` (todavía no hay espacios).
 - Hash del wasm:
   `8cd374974ef6938f514caa74c8b29b19f87c0ae45547a22c6739e1a0cfa7533f` (upload:
   [tx e0a6fa19…](https://stellar.expert/explorer/testnet/tx/e0a6fa19b513e8e8bcbc6f553f2f617f5d431c954970045243976924b8d40c35))
-- Fecha staging: 2026-10-26 · Fecha producción: _(completar)_
+- Fecha staging: 2026-10-26 · Fecha producción: 2026-10-26
+  ([tx upgrade](https://stellar.expert/explorer/testnet/tx/8bd4a2cfe94a4ac9b8abbb7123c6904eba5859c32c31ea87422950106deba7e0);
+  `event_count` sigue en 4)

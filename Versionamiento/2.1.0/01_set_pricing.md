@@ -74,4 +74,6 @@ cotizar el tramo de 500: `{"cost":"450000000","kind":2,"max_claims":300}`.
 
 ## Resultado
 
-- Staging: trustline y precios el 2026-10-26 · Producción: _(completar)_
+- Staging: trustline y precios el 2026-10-26 · Producción: precios el 2026-10-26
+  ([tx](https://stellar.expert/explorer/testnet/tx/c72bfce78d86572f2ec112b99d498ad6c098e3662356121f2f63b48483b45874));
+  la tesorería es la misma cuenta, así que la trustline ya estaba

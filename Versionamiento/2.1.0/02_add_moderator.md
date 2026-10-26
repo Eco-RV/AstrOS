@@ -27,3 +27,9 @@ stellar contract invoke --id attendance-staging --source astros-admin --network 
 ```
 
 Debe devolver `true`. Al entrar con esa wallet aparece la pestaña **Admin**.
+
+## Resultado
+
+- `GAXGUMYUCCEVU26AHQ4EUZBHUCDECY4WBPPFQMWAYGWRNPC5ZJE7TQ22`: moderador en
+  staging y en producción (2026-10-26,
+  [tx producción](https://stellar.expert/explorer/testnet/tx/0928bedfacb9232d3f583838774acb79169b7ca43c35081ddb93708221e21baa)).
