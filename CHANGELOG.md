@@ -64,7 +64,7 @@ asistencia contra el farming, certificados verificables, moderación y cobro.
   cobro). Ver `Versionamiento/2.1.0/` (upgrade, precios y moderadores).
 - Script `scripts/seed-demo.mjs`: datos de demo en development.
 
-## 2.0.1 — sin publicar
+## 2.0.1 — 2026-10-25
 
 Rediseño visual completo con el sistema visual común de las apps de Oswald
 (`design-system.md`: estructura de Stellar Apex, energía de Zenless Zone Zero) y
