@@ -3,7 +3,7 @@
 Formato: una sección por versión (`## x.y.z — AAAA-MM-DD`, o `— sin publicar`
 mientras se desarrolla). Flujo completo en [docs/FLUJO.md](docs/FLUJO.md).
 
-## 2.1.0 — sin publicar
+## 2.1.0 — 2026-10-26
 
 AstrOS como SaaS para cualquier negocio: cada barbería, universidad o comunidad
 tiene su espacio, con tres roles (asistente, organizador y moderador), prueba de
