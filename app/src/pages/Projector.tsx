@@ -16,8 +16,8 @@ import {
 	STATUS_LABEL,
 	useEvent,
 } from "../attendance/useAttendance"
+import { Blueprint } from "../brand/Blueprint"
 import { Wordmark } from "../brand/Logo"
-import { Starfield } from "../brand/Starfield"
 
 interface Claim {
 	key: string
@@ -122,7 +122,7 @@ const Projector = () => {
 	if (error || (!event && !Number.isInteger(eventId)))
 		return (
 			<div className={styles.screen}>
-				<Starfield shower={false} />
+				<Blueprint grid />
 				<p className={styles.problem}>
 					{error?.message ?? "Ese evento no existe."} <Link to="/">Volver</Link>
 				</p>
@@ -134,7 +134,7 @@ const Projector = () => {
 
 	return (
 		<div className={styles.screen}>
-			<Starfield shower={false} />
+			<Blueprint grid />
 			{stars.map((s) => (
 				<span
 					key={s.id}
@@ -161,8 +161,8 @@ const Projector = () => {
 					<code className={styles.url}>{url.replace(/^https?:\/\//, "")}</code>
 					{isLocalhost && (
 						<p className={styles.warning}>
-							⚠️ Este QR apunta a <strong>localhost</strong>: los celulares no
-							lo pueden abrir. Proyecta desde la URL publicada (Vercel).
+							Este QR apunta a <strong>localhost</strong>: los celulares no lo
+							pueden abrir. Proyecta desde la URL publicada (Vercel).
 						</p>
 					)}
 				</section>
@@ -209,12 +209,12 @@ const Projector = () => {
 							<ul className={styles.feed}>
 								{claims.length === 0 ? (
 									<li className={styles.waiting}>
-										Esperando la primera estrella…
+										Esperando el primer reclamo…
 									</li>
 								) : (
 									claims.map((c) => (
 										<li key={c.key}>
-											<span className={styles.feedStar}>✦</span>
+											<span className={styles.feedStar} aria-hidden />
 											<code>{shortAddress(c.attendee)}</code> reclamó
 											{c.number ? ` la #${c.number}` : " su insignia"}
 										</li>
@@ -236,7 +236,7 @@ const Projector = () => {
 					<b>2</b> Entra con tu correo
 				</li>
 				<li>
-					<b>3</b> Toca «Reclamar mi insignia»
+					<b>3</b> Toca «Reclamar insignia»
 				</li>
 			</ol>
 		</div>

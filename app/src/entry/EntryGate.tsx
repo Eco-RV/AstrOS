@@ -4,27 +4,43 @@ import { useWallet } from "../hooks/useWallet"
 import { Login } from "./Login"
 import { Splash } from "./Splash"
 
-/** Minimum time the loading screen stays up when the app opens. */
-const OPENING_MS = 1600
+/** How long the opening loading screen stays up (once per browser session). */
+const OPENING_MS = 1300
 /** How long the welcome screen shows right after signing in. */
 const WELCOME_MS = 1300
+const SEEN_KEY = "astros:opening-seen"
+
+const openingSeen = () => {
+	try {
+		return sessionStorage.getItem(SEEN_KEY) === "1"
+	} catch {
+		return false
+	}
+}
 
 /**
- * Nobody enters AstrOS without a wallet. On every visit it shows the loading
- * screen while the wallet session is restored, then either the app or the
+ * Nobody enters AstrOS without a wallet. The first visit of a session shows
+ * the loading screen (skippable with a click); then, while the wallet session
+ * is restored, a short "connecting" screen, and finally either the app or the
  * login screen. Signing in shows a short welcome before the app.
  */
 export const EntryGate = ({ children }: { children: ReactNode }) => {
 	const { address, isPending } = useWallet()
 	const cavos = useCavosState()
-	const [opening, setOpening] = useState(true)
+	const [opening, setOpening] = useState(() => !openingSeen())
 	const [welcome, setWelcome] = useState(false)
 	const sawLogin = useRef(false)
 
 	useEffect(() => {
+		if (!opening) return
+		try {
+			sessionStorage.setItem(SEEN_KEY, "1")
+		} catch {
+			// Storage blocked: the opening just shows again next time.
+		}
 		const timer = setTimeout(() => setOpening(false), OPENING_MS)
 		return () => clearTimeout(timer)
-	}, [])
+	}, [opening])
 
 	// Cavos is signed in but the wallet itself is still being opened.
 	const restoringWallet = Boolean(
@@ -46,9 +62,11 @@ export const EntryGate = ({ children }: { children: ReactNode }) => {
 		return () => clearTimeout(timer)
 	}, [address])
 
-	if (opening || (resolving && !address)) return <Splash />
+	if (opening)
+		return <Splash duration={OPENING_MS} onSkip={() => setOpening(false)} />
+	if (resolving && !address) return <Splash message="Conectando con Stellar…" />
 	if (restoringWallet) return <Splash message="Abriendo tu wallet…" />
-	if (welcome) return <Splash message="Bienvenido a la constelación ✦" />
+	if (welcome) return <Splash message="Bienvenido a la constelación" />
 	if (!address) return <Login />
 	return children
 }

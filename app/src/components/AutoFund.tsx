@@ -52,7 +52,7 @@ export const AutoFund = () => {
 	return (
 		<div className={`${styles.banner} ${styles[phase]}`} role="status">
 			<span className={styles.rocket} aria-hidden>
-				{phase === "done" ? "✦" : phase === "error" ? "!" : "🚀"}
+				{phase === "done" ? "✓" : phase === "error" ? "!" : "↑"}
 			</span>
 			<div className={styles.body}>
 				<strong>

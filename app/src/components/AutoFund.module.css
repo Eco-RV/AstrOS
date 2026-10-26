@@ -7,15 +7,12 @@
 	display: flex;
 	align-items: center;
 	gap: 0.85rem;
-	width: min(420px, calc(100vw - 32px));
+	width: min(440px, calc(100vw - 32px));
 	padding: 0.85rem 1rem;
-	border-radius: var(--radius-lg);
-	background: rgba(26, 20, 56, 0.95);
-	border: 1px solid var(--color-border-strong);
-	box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
-	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
-	animation: rise 0.45s var(--ease-spring);
+	background: var(--bg);
+	border: 1px solid var(--line-strong);
+	box-shadow: 4px 4px 0 var(--signal);
+	animation: rise 0.45s var(--ease-out);
 }
 
 @media (max-width: 767px) {
@@ -25,37 +22,39 @@
 }
 
 .done {
-	border-color: rgba(61, 220, 151, 0.5);
+	border-left: 6px solid var(--ok);
 }
 
 .error {
-	border-color: rgba(255, 107, 138, 0.5);
+	border-color: var(--danger);
+	border-left: 6px solid var(--danger);
 }
 
 .rocket {
 	display: grid;
 	place-items: center;
-	width: 44px;
-	height: 44px;
+	width: 40px;
+	height: 40px;
 	flex-shrink: 0;
-	border-radius: 50%;
-	background: var(--gradient-aurora);
+	background: var(--signal);
+	color: var(--on-signal);
+	font-family: var(--display);
 	font-size: 1.3rem;
-	color: #fff;
 	font-weight: 700;
 }
 
 .funding .rocket {
-	animation: shake 0.5s ease-in-out infinite;
+	animation: nudge 0.6s var(--ease-snap) infinite alternate;
 }
 
 .done .rocket {
-	background: var(--color-success);
-	animation: pop 0.5s var(--ease-spring);
+	background: var(--ok);
+	color: var(--void);
 }
 
 .error .rocket {
-	background: var(--color-error);
+	background: var(--danger);
+	color: var(--on-signal);
 }
 
 .body {
@@ -63,29 +62,33 @@
 	flex-direction: column;
 	flex: 1;
 	min-width: 0;
+	font-size: var(--step--1);
 }
 
 .body small {
-	color: var(--color-text-muted);
-	line-height: 1.35;
+	color: var(--muted);
+	line-height: 1.4;
 }
 
+/* Segmented XP-style bar. */
 .bar {
 	position: relative;
-	height: 4px;
+	height: 8px;
 	margin-top: 0.5rem;
-	border-radius: 99px;
-	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid var(--line-strong);
 	overflow: hidden;
 }
 
 .bar::after {
 	content: "";
 	position: absolute;
-	inset: 0;
+	inset: 1px;
 	width: 40%;
-	border-radius: inherit;
-	background: var(--gradient-aurora);
+	background: repeating-linear-gradient(
+		90deg,
+		var(--signal) 0 10px,
+		transparent 10px 12px
+	);
 	animation: fill 1.4s var(--ease-out) infinite;
 }
 
@@ -96,15 +99,9 @@
 	}
 }
 
-@keyframes shake {
-	50% {
-		transform: translateY(-3px) rotate(-6deg);
-	}
-}
-
-@keyframes pop {
-	from {
-		transform: scale(0.4);
+@keyframes nudge {
+	to {
+		transform: translateY(-3px);
 	}
 }
 
