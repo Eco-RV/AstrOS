@@ -1,7 +1,10 @@
+import { Buffer } from "buffer"
 import { shortAddress } from "@stellar-scaffold/app-lib"
 import { attendance } from "@stellar-scaffold/app-lib/clients"
+import { useQuery } from "@tanstack/react-query"
+import { ProofMode } from "attendance"
 import { useCallback, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useSearchParams } from "react-router-dom"
 import styles from "../attendance/attendance.module.css"
 import { BadgeArt } from "../attendance/BadgeArt"
 import { Gauge } from "../attendance/Gauge"
@@ -18,6 +21,26 @@ import { useNotification } from "../hooks/useNotification"
 import { explorerContract } from "../lib/explorer"
 import { useMagnetic, useReveal } from "../motion/motion"
 import { RiseText } from "../motion/RiseText"
+import { certificatePath } from "../proof/certificate"
+import { fromBase64Url } from "../proof/eventKey"
+import { MyAttendanceQr } from "../proof/ProofUi"
+import { proofLabel } from "../spaces/catalog"
+import saas from "../spaces/saas.module.css"
+import { SpaceChip } from "../spaces/SpaceUi"
+import {
+	metaOf,
+	usePendingRequests,
+	useEventView,
+	useSpace,
+} from "../spaces/useSaas"
+
+/** Report reasons (same codes as `report_event`). */
+const REASONS = [
+	"Contenido ofensivo",
+	"Burla o evento sin sentido",
+	"Spam",
+	"Otro motivo",
+]
 
 const EventDetail = () => {
 	const eventId = Number(useParams().id)
@@ -29,6 +52,29 @@ const EventDetail = () => {
 	const closeNova = useCallback(() => setCelebrate(undefined), [])
 	const magnetic = useMagnetic<HTMLButtonElement>(0.25)
 	const explainRef = useReveal<HTMLDivElement>()
+	const { data: view } = useEventView(eventId)
+	const meta = metaOf(view)
+	const { data: space } = useSpace(meta?.space_id)
+	const { data: requests } = usePendingRequests(
+		eventId,
+		meta?.proof === ProofMode.Aprobacion,
+	)
+	const { data: member } = useQuery({
+		queryKey: ["attendance", "member", meta?.space_id, address],
+		enabled: Boolean(address && meta),
+		queryFn: async () =>
+			(
+				await attendance.is_space_member({
+					space_id: meta!.space_id,
+					address: address!,
+				})
+			).result,
+	})
+	// The rotating QR opens this page with ?w=<window>&s=<signature>.
+	const [search] = useSearchParams()
+	const codeWindow = search.get("w")
+	const codeSig = search.get("s")
+	const [reason, setReason] = useState<number>()
 
 	if (isLoading)
 		return (
@@ -71,6 +117,54 @@ const EventDetail = () => {
 		)
 		if (number !== undefined) setCelebrate(number)
 	}
+
+	const claimWithCode = async () => {
+		if (!codeWindow || !codeSig) return
+		const number = await run(
+			(publicKey) =>
+				attendance.claim_v2(
+					{
+						attendee: publicKey,
+						event_id: eventId,
+						window: BigInt(codeWindow),
+						signature: Buffer.from(fromBase64Url(codeSig)),
+					},
+					{ publicKey },
+				),
+			"Insignia reclamada. Ya está en tu wallet.",
+		)
+		if (number !== undefined) setCelebrate(number)
+	}
+
+	const requestBadge = () =>
+		run(
+			(publicKey) =>
+				attendance.request_attendance(
+					{ attendee: publicKey, event_id: eventId },
+					{ publicKey },
+				),
+			"Solicitud enviada: el organizador la revisará y aprobará tu insignia.",
+		)
+
+	const report = async () => {
+		if (reason === undefined) return
+		await run(
+			(publicKey) =>
+				attendance.report_event(
+					{ reporter: publicKey, event_id: eventId, reason },
+					{ publicKey },
+				),
+			"Gracias: un moderador revisará el evento.",
+		)
+		setReason(undefined)
+	}
+
+	const requested = Boolean(address && requests?.includes(address))
+	const canManage = isOrganizer || member === true
+	const notYet =
+		status === "upcoming"
+			? `Podrás reclamarla a partir del ${formatDate(event.starts_at)}.`
+			: "Este evento ya no entrega insignias."
 
 	const close = () =>
 		run(
@@ -118,7 +212,11 @@ const EventDetail = () => {
 					/>
 				</div>
 				<div className={`cell ${styles.detailBody}`}>
-					<StateChip state={state} status={status} />
+					<div className={saas.row}>
+						<StateChip state={state} status={status} />
+						{space && <SpaceChip space={space} />}
+						{meta && <span className="chip">{proofLabel(meta.proof)}</span>}
+					</div>
 					<h1 className="title">
 						<RiseText text={event.name} />
 					</h1>
@@ -126,11 +224,59 @@ const EventDetail = () => {
 
 					<div className={styles.actions}>
 						{myBadge ? (
-							<p className={styles.owned}>
-								Tienes la insignia{" "}
-								<span className={styles.number}>#{myBadge.number}</span> ·{" "}
-								{formatDate(myBadge.claimed_at)}
+							<>
+								<p className={styles.owned}>
+									Tienes la insignia{" "}
+									<span className={styles.number}>#{myBadge.number}</span> ·{" "}
+									{formatDate(myBadge.claimed_at)}
+								</p>
+								<Link
+									to={certificatePath(event.id, address!)}
+									className="btn btn-primary"
+								>
+									Ver certificado
+								</Link>
+							</>
+						) : meta?.proof === ProofMode.QrRotativo ? (
+							status === "open" && codeWindow && codeSig ? (
+								<button
+									ref={magnetic}
+									className={`btn-alert ${styles.claimButton} ${styles.stickyClaim}`}
+									onClick={() => void claimWithCode()}
+									disabled={pending}
+								>
+									{pending ? "Firmando en tu wallet…" : "Reclamar insignia ↗"}
+								</button>
+							) : (
+								<p className={styles.hint}>
+									{status === "open"
+										? "Escanea el QR que se proyecta en el evento: cambia cada 30 segundos y cada código vale 2 minutos."
+										: notYet}
+								</p>
+							)
+						) : meta?.proof === ProofMode.CheckInStaff ? (
+							<p className={styles.hint}>
+								{status === "open" || status === "upcoming"
+									? "Al llegar, muestra tu QR de asistencia al staff: ellos confirman que estuviste aquí."
+									: notYet}
 							</p>
+						) : meta?.proof === ProofMode.Aprobacion ? (
+							requested ? (
+								<p className={styles.hint}>
+									Solicitud enviada. El organizador la revisará y, si estuviste,
+									aprobará tu insignia.
+								</p>
+							) : status === "open" ? (
+								<button
+									className={`btn-alert ${styles.claimButton}`}
+									onClick={() => void requestBadge()}
+									disabled={pending}
+								>
+									{pending ? "Firmando en tu wallet…" : "Pedir mi insignia"}
+								</button>
+							) : (
+								<p className={styles.hint}>{notYet}</p>
+							)
 						) : status === "open" ? (
 							<button
 								ref={magnetic}
@@ -148,6 +294,11 @@ const EventDetail = () => {
 							</p>
 						)}
 						<button onClick={() => void share()}>Compartir</button>
+						{meta && canManage && (
+							<Link to={`/organizar/evento/${event.id}`} className="btn">
+								Administrar
+							</Link>
+						)}
 						{isOrganizer && (
 							<Link
 								to={`/evento/${event.id}/proyectar`}
@@ -169,6 +320,41 @@ const EventDetail = () => {
 					</div>
 				</div>
 			</section>
+
+			{meta?.proof === ProofMode.CheckInStaff &&
+				!myBadge &&
+				address &&
+				(status === "open" || status === "upcoming") && (
+					<MyAttendanceQr address={address} />
+				)}
+
+			{meta && !canManage && (
+				<details className={saas.card}>
+					<summary>Reportar este evento</summary>
+					<p className={saas.muted}>
+						Si el evento es ofensivo, una burla o spam, avísanos. Un moderador
+						lo revisará y puede ocultarlo.
+					</p>
+					<div className={saas.filters} role="group" aria-label="Motivo">
+						{REASONS.map((label, i) => (
+							<button
+								key={label}
+								aria-pressed={reason === i}
+								onClick={() => setReason(i)}
+							>
+								{label}
+							</button>
+						))}
+					</div>
+					<button
+						className="btn-alert"
+						disabled={reason === undefined || pending}
+						onClick={() => void report()}
+					>
+						Enviar reporte
+					</button>
+				</details>
+			)}
 
 			<section className="slab">
 				<div className="wrap">

@@ -3,6 +3,67 @@
 Formato: una sección por versión (`## x.y.z — AAAA-MM-DD`, o `— sin publicar`
 mientras se desarrolla). Flujo completo en [docs/FLUJO.md](docs/FLUJO.md).
 
+## 2.1.0 — sin publicar
+
+AstrOS como SaaS para cualquier negocio: cada barbería, universidad o comunidad
+tiene su espacio, con tres roles (asistente, organizador y moderador), prueba de
+asistencia contra el farming, certificados verificables, moderación y cobro.
+
+### Espacios y roles
+
+- **Espacios** (`/s/:enlace`): nombre, categoría (Universidad, Empresa,
+  Comunidad, Belleza, Bienestar, Conferencia, Otro), logo y un color de una
+  lista curada (todos con contraste ≥ 7:1).
+- **Consola del organizador** (`/organizar`): crear espacios, ver sus eventos,
+  el plan y el uso del mes, y agregar staff por dirección.
+- **Panel de moderación** (`/admin`): verificar u ocultar espacios, revisar
+  reportes y ocultar eventos. Solo para el admin y los moderadores.
+- La navegación muestra "Admin" solo a moderadores.
+
+### Prueba de asistencia y certificados
+
+- Cada evento elige cómo se comprueba la asistencia:
+  - **Check-in del staff**: el staff escanea el QR personal del asistente con la
+    cámara y firma por él.
+  - **QR rotativo**: el proyector muestra un código firmado que cambia cada 30 s
+    y vale 2 minutos. La llave se crea en el navegador del organizador y no se
+    puede extraer.
+  - **Aprobación** (virtual): el asistente pide su insignia y el organizador
+    aprueba la lista.
+- El `claim` abierto ya no sirve en estos eventos; cada insignia registra quién
+  dio fe y con qué método.
+- **Certificado verificable** (`/certificado/:evento/:cuenta`), público e
+  imprimible. El nombre no va a la blockchain: solo una huella con sal que el
+  titular registra; el enlace lleva el nombre y la sal para comprobarlo.
+
+### Moderación
+
+- El inicio muestra **solo eventos de espacios verificados**, con filtro por
+  categoría. Los eventos anteriores a 2.1.0 siguen en su página y en "Mi
+  constelación", pero no en el inicio.
+- Botón **Reportar** en cada evento (una vez por cuenta) y filtro de palabras
+  ofensivas o de burla al crear espacios y eventos.
+
+### Cobro en USDC por tramos de asistentes
+
+- Plan gratis: 2 eventos al mes por espacio, hasta 50 asistentes cada uno.
+- **Evento único** por tamaño (hasta 100 / 500 / 2 000 asistentes: 15 / 45 / 120
+  USDC), cobrado en la misma firma.
+- **Plan mensual** por tamaño de evento (39 / 99 / 249 USDC al mes). Un evento
+  más grande que el plan paga su tramo.
+- `quote_event` cotiza el costo exacto antes de firmar; el formulario lo muestra
+  según los asistentes esperados. Solo los eventos gratis gastan la cuota
+  gratis.
+- Botón para agregar la trustline de USDC y enlace al faucet de Circle.
+- Plan de patrocinio de tarifas para asistentes en `docs/patrocinio-tarifas.md`
+  (sin implementar).
+
+### Contratos
+
+- `attendance`: upgrade aditivo (espacios, eventos v2, prueba, moderación,
+  cobro). Ver `Versionamiento/2.1.0/` (upgrade, precios y moderadores).
+- Script `scripts/seed-demo.mjs`: datos de demo en development.
+
 ## 2.0.1 — 2026-10-25
 
 Rediseño visual completo con el sistema visual común de las apps de Oswald

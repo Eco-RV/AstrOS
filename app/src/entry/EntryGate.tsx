@@ -1,4 +1,6 @@
 import { type ReactNode, useEffect, useRef, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { RETURN_KEY } from "../cavos/CavosRoot"
 import { useCavosState } from "../cavos/context"
 import { useWallet } from "../hooks/useWallet"
 import { Login } from "./Login"
@@ -52,6 +54,21 @@ export const EntryGate = ({ children }: { children: ReactNode }) => {
 	const showLogin = !opening && !resolving && !restoringWallet && !address
 
 	if (showLogin) sawLogin.current = true
+
+	// Signing in with Cavos starts from "/" (see CavosRoot): once the wallet is
+	// open, go back to the page the user was on.
+	const navigate = useNavigate()
+	useEffect(() => {
+		if (!address) return
+		let back: string | null = null
+		try {
+			back = sessionStorage.getItem(RETURN_KEY)
+			sessionStorage.removeItem(RETURN_KEY)
+		} catch {
+			// Storage blocked: stay on the home page.
+		}
+		if (back?.startsWith("/")) void navigate(back, { replace: true })
+	}, [address, navigate])
 
 	// After signing in from the login screen, welcome the user in.
 	useEffect(() => {
