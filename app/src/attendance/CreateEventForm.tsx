@@ -1,6 +1,6 @@
 import { Buffer } from "buffer"
 import { attendance } from "@stellar-scaffold/app-lib/clients"
-import { AttendMode, BillingKind, ProofMode } from "attendance"
+import { AttendMode, BillingKind, type EventInput, ProofMode } from "attendance"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { tokenSymbol } from "../billing/usdc"
@@ -135,7 +135,9 @@ export const CreateEventForm = ({ spaceId }: { spaceId: number }) => {
 							max_claims: Number(maxClaims) || 0,
 							mode,
 							proof,
-							event_key: eventKey,
+							// The local client types an empty Option as `undefined`, the CI one
+							// (stellar-js) as `null`; the SDK sends either as "none".
+							event_key: eventKey as EventInput["event_key"],
 						},
 					},
 					{ publicKey },
