@@ -27,8 +27,8 @@ export const QrCode = ({ value }: { value: string }) => {
 				role="img"
 				aria-label={`Código QR: ${value}`}
 			>
-				<rect width={size} height={size} fill="#fff" />
-				<path d={path} fill="#0b0820" />
+				<rect width={size} height={size} style={{ fill: "var(--paper)" }} />
+				<path d={path} style={{ fill: "var(--void)" }} />
 			</svg>
 			<span className={styles.qrLogo}>
 				<Seal size={64} />

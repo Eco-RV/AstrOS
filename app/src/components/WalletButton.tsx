@@ -30,7 +30,7 @@ export const WalletButton = () => {
 	if (!address) return null
 
 	const label = cavos?.email && connector === "cavos" ? cavos.email : null
-	const initial = (label ?? "✦").charAt(0).toUpperCase()
+	const initial = label ? label.charAt(0).toUpperCase() : address.slice(-2)
 	const close = () => menu.current?.hidePopover()
 
 	const copy = () => {

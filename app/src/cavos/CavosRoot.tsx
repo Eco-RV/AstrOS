@@ -14,6 +14,10 @@ import { CavosContext, type CavosState } from "./context"
  * its state through `useCavosState()`. WalletProvider turns it into the same
  * `useWallet()` API the rest of the app already uses.
  */
+/** Current value of a palette token (the Cavos modal needs a literal color). */
+const paletteColor = (token: string) =>
+	getComputedStyle(document.documentElement).getPropertyValue(token).trim()
+
 export const CavosRoot = ({ children }: { children: ReactNode }) => {
 	if (!isCavosConfigured || !cavosNetwork) return children
 
@@ -37,7 +41,8 @@ export const CavosRoot = ({ children }: { children: ReactNode }) => {
 			modal={{
 				appName: "AstrOS",
 				providers: ["email", "google"],
-				primaryColor: "#7b61ff",
+				// The modal takes a literal color: read it from the palette token.
+				primaryColor: paletteColor("--void"),
 			}}
 		>
 			<CavosBridge>{children}</CavosBridge>

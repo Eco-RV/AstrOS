@@ -2,25 +2,28 @@
 .avatarBig {
 	display: grid;
 	place-items: center;
-	border-radius: 50%;
-	background: var(--gradient-aurora);
-	color: #fff;
-	font-family: var(--font-display);
+	border-radius: 0;
+	background: var(--paper);
+	color: var(--on-signal);
+	font-family: var(--display);
 	font-weight: 700;
+	text-decoration: none;
 }
 
 .avatar {
-	width: 40px;
-	height: 40px;
-	min-height: 40px;
+	box-shadow: none;
+	width: 38px;
+	height: 38px;
+	min-height: 38px;
 	padding: 0;
-	border: 2px solid rgba(255, 255, 255, 0.25);
-	font-size: 1.05rem;
+	border: 1px solid var(--paper);
+	font-size: 1rem;
 }
 
 .avatar:hover:not(:disabled) {
-	background: var(--gradient-aurora);
-	box-shadow: var(--glow);
+	background: var(--signal);
+	border-color: var(--signal);
+	color: var(--on-signal);
 }
 
 .avatarBig {
@@ -36,24 +39,21 @@
 	inset: auto;
 	top: calc(var(--header-h) + 8px);
 	right: 16px;
-	width: min(320px, calc(100vw - 32px));
+	width: min(330px, calc(100vw - 32px));
 	margin: 0;
-	padding: 1rem;
-	border-radius: var(--radius-lg);
-	border: 1px solid var(--color-border-strong);
-	background: rgba(26, 20, 56, 0.96);
-	color: var(--color-text);
-	box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
-	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
-	transform-origin: top right;
+	padding: 0;
+	border-radius: 0;
+	border: 2px solid var(--ink);
+	background: var(--bg);
+	box-shadow: 8px 8px 0 var(--signal);
+	color: var(--ink);
 	transition:
 		opacity 0.2s,
-		transform 0.25s var(--ease-spring),
+		transform 0.25s var(--ease-out),
 		overlay 0.2s allow-discrete,
 		display 0.2s allow-discrete;
 	opacity: 0;
-	transform: scale(0.92) translateY(-6px);
+	transform: translateY(-6px);
 }
 
 .menu:popover-open {
@@ -64,7 +64,7 @@
 @starting-style {
 	.menu:popover-open {
 		opacity: 0;
-		transform: scale(0.92) translateY(-6px);
+		transform: translateY(-6px);
 	}
 }
 
@@ -72,6 +72,8 @@
 	display: flex;
 	align-items: center;
 	gap: 0.75rem;
+	padding: 1rem;
+	border-bottom: 1px solid var(--line);
 }
 
 .menuHead div {
@@ -84,59 +86,68 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	font-size: var(--step--1);
 }
 
 .menuHead code {
 	align-self: flex-start;
-	margin-top: 0.2rem;
-	font-size: 0.8rem;
+	margin-top: 0.25rem;
+	font-size: var(--step--2);
 }
 
 .balance {
-	margin: 1rem 0;
-	padding: 0.75rem 1rem;
-	border-radius: var(--radius);
-	background: rgba(255, 214, 107, 0.08);
-	border: 1px solid rgba(255, 214, 107, 0.25);
-	color: var(--color-text-muted);
-	font-size: 0.85rem;
+	padding: 0.9rem 1rem;
+	background: var(--signal);
+	color: var(--on-signal);
+	font-size: var(--step--2);
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
 }
 
 .balance span {
-	color: var(--color-star);
-	font-family: var(--font-display);
-	font-size: 1.3rem;
+	font-family: var(--display);
+	font-size: 1.5rem;
 	font-weight: 700;
-	margin-right: 0.25rem;
+	letter-spacing: -0.02em;
+	margin-right: 0.35rem;
 }
 
 .menuItems {
 	display: flex;
 	flex-direction: column;
-	gap: 0.35rem;
+	gap: 1px;
+	background: var(--line);
+	border-top: 1px solid var(--line);
 }
 
 .menuItems button,
 .menuItems a {
-	justify-content: flex-start;
-	text-align: left;
-	width: 100%;
-	border-radius: var(--radius);
-	border-color: transparent;
-	background: rgba(255, 255, 255, 0.04);
-	color: var(--color-text);
-	font-size: 0.92rem;
-	text-decoration: none;
-	padding: 0.65rem 0.9rem;
-	min-height: 44px;
+	box-shadow: none;
 	display: flex;
 	align-items: center;
+	justify-content: flex-start;
+	width: 100%;
+	min-height: 44px;
+	padding: 0.65rem 1rem;
+	border: 0;
+	background: var(--bg);
+	color: var(--ink);
+	font-family: var(--body);
+	font-size: var(--step--2);
+	font-weight: 500;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	text-align: left;
+	text-decoration: none;
 }
 
+.menuItems button:hover:not(:disabled),
 .menuItems a:hover {
-	background: rgba(255, 255, 255, 0.1);
+	background: var(--raise);
+	text-decoration: underline;
 }
 
+/* Red line marks the destructive item (no small red text on black). */
 .menuItems .danger {
-	color: var(--color-error);
+	box-shadow: inset 4px 0 0 var(--danger);
 }

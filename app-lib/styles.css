@@ -1,44 +1,129 @@
-/* AstrOS design tokens: "night sky" theme (1.0.1). Fonts are loaded in
-   app/index.html (Space Grotesk for display, Inter for text). */
+/* AstrOS design system: Oswald's shared visual language (design-system.md)
+   with the AstrOS "Nebula" palette. Components never use literal colors:
+   only the derived tokens below, so they work the same inside a paper
+   `.slab` and with any palette. Fonts are loaded in app/index.html. */
 
 :root {
-	color-scheme: dark;
+	/* Palette (AstrOS · Nebula): the only block that changes between apps. */
+	--void: #0a0912;
+	--surface: #15131f;
+	--paper: #f0edf8;
+	--signal: #b9a4ff;
+	--alert: #ff5ca8;
+	/* Semantic, same in every app. */
+	--ok: #3ddc84;
+	--danger: #ff3b30;
 
-	--color-bg: #0b0820;
-	--color-surface: #1a1438;
-	--color-surface-2: #241b4d;
-	--color-text: #f2efff;
-	--color-text-muted: #a69fcc;
-	--color-border: rgba(255, 255, 255, 0.1);
-	--color-border-strong: rgba(255, 255, 255, 0.2);
-	--color-accent: #9b7bff;
-	--color-accent-2: #3dd6f5;
-	--color-pink: #c86dd7;
-	--color-star: #ffd66b;
-	--color-success: #3ddc97;
-	--color-error: #ff6b8a;
-	--color-warning: #ffb020;
-
-	--gradient-aurora: linear-gradient(120deg, #7b61ff, #c86dd7 55%, #3dd6f5);
-	--gradient-card: linear-gradient(
-		160deg,
-		rgba(36, 27, 77, 0.85),
-		rgba(26, 20, 56, 0.85)
+	/* Derived: dark surface by default. */
+	--bg: var(--void);
+	--cell: var(--void);
+	--raise: var(--surface);
+	--ink: var(--paper);
+	--muted: color-mix(in srgb, var(--paper) 62%, var(--void));
+	--line: color-mix(in srgb, var(--paper) 14%, transparent);
+	--line-strong: color-mix(in srgb, var(--ink) 32%, transparent);
+	--on-signal: var(--void);
+	--hazard: repeating-linear-gradient(
+		-45deg,
+		var(--signal) 0 12px,
+		var(--void) 12px 24px
+	);
+	--stripes: repeating-linear-gradient(
+		-45deg,
+		var(--cell) 0 14px,
+		var(--raise) 14px 28px
 	);
 
-	--font-display: "Space Grotesk", Inter, system-ui, sans-serif;
-	--font-text: Inter, system-ui, sans-serif;
+	--display: "Oswald", "Arial Narrow", sans-serif;
+	--body: "Oswald", "Arial Narrow", sans-serif;
 
-	--radius: 12px;
-	--radius-lg: 22px;
-	--shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-	--glow:
-		0 0 0 1px rgba(155, 123, 255, 0.35), 0 8px 32px rgba(123, 97, 255, 0.35);
-	--ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+	--step--2: 0.74rem;
+	--step--1: clamp(0.8rem, 0.77rem + 0.15vw, 0.88rem);
+	--step-0: clamp(0.92rem, 0.88rem + 0.2vw, 1rem);
+	--step-1: clamp(1.2rem, 1.05rem + 0.7vw, 1.6rem);
+	--step-2: clamp(1.7rem, 1.3rem + 1.8vw, 2.8rem);
+	--step-3: clamp(2.4rem, 1.6rem + 3.6vw, 4.8rem);
+	--step-4: clamp(3.4rem, 1rem + 10.5vw, 11rem);
+
+	--wrap: 1320px;
+	--gutter: clamp(16px, 3vw, 40px);
+	--cut: clamp(28px, 4vw, 64px);
+	--pad: clamp(1rem, 2.4vw, 1.8rem);
+
+	--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+	--ease-snap: cubic-bezier(0.7, 0, 0.2, 1);
 	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-	--tabbar-h: 72px;
+	--tabbar-h: 64px;
 	--header-h: 64px;
+
+	color-scheme: dark;
+}
+
+/* Light surface: a slab redefines the same tokens, so components inside it
+   work unchanged. Titles inside go in --ink (never --signal on paper). */
+.slab {
+	--bg: var(--paper);
+	--cell: var(--paper);
+	--raise: color-mix(in srgb, var(--paper) 55%, #fff);
+	--ink: var(--void);
+	--muted: color-mix(in srgb, var(--void) 66%, var(--paper));
+	--line: color-mix(in srgb, var(--void) 18%, transparent);
+	/* Tokens built from the ones above resolve where they are declared:
+	   declare them again so they pick up the paper values. */
+	--line-strong: color-mix(in srgb, var(--ink) 32%, transparent);
+	--stripes: repeating-linear-gradient(
+		-45deg,
+		var(--cell) 0 14px,
+		var(--raise) 14px 28px
+	);
+
+	position: relative;
+	z-index: 1;
+	/* Full width even inside the centered main column. */
+	margin: clamp(30px, 5vw, 60px) calc(50% - 50vw);
+	padding: var(--cut) 0 calc(var(--cut) + 40px);
+	background-color: var(--bg);
+	background-image: radial-gradient(
+		color-mix(in srgb, var(--void) 13%, transparent) 1px,
+		transparent 1.5px
+	);
+	background-size: 14px 14px;
+	color: var(--ink);
+	clip-path: polygon(
+		0 var(--cut),
+		100% 0,
+		100% calc(100% - var(--cut)),
+		0 100%
+	);
+}
+
+/* Hazard band along the bottom diagonal. */
+.slab::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background: var(--hazard);
+	clip-path: polygon(
+		0 calc(100% - 18px),
+		100% calc(100% - var(--cut) - 18px),
+		100% calc(100% - var(--cut)),
+		0 100%
+	);
+}
+
+.slab h1,
+.slab h2,
+.slab h3 {
+	color: var(--ink);
+}
+
+/* Centered section inside a full-width slab. */
+.wrap {
+	width: min(calc(var(--wrap) + 2px), 100%);
+	margin: 0 auto;
+	padding: 0 calc(var(--gutter) + 1px);
 }
 
 *,
@@ -50,135 +135,433 @@
 html {
 	-webkit-text-size-adjust: 100%;
 	-webkit-tap-highlight-color: transparent;
+	overflow-x: clip;
 }
 
 body {
 	margin: 0;
-	font-family: var(--font-text);
-	background: var(--color-bg);
-	color: var(--color-text);
-	line-height: 1.55;
+	overflow-x: clip;
+	background: var(--bg);
+	color: var(--ink);
+	font: var(--step-0) / 1.6 var(--body);
 	-webkit-font-smoothing: antialiased;
 }
 
 h1,
 h2,
 h3 {
-	font-family: var(--font-display);
-	line-height: 1.15;
+	font-family: var(--display);
+	font-weight: 600;
+	line-height: 1.02;
 	letter-spacing: -0.01em;
+	color: var(--signal);
+}
+
+/* Section / hero titles: Oswald 700 caps. */
+.title {
+	font-family: var(--display);
+	font-weight: 700;
+	text-transform: uppercase;
+	line-height: 0.86;
+	letter-spacing: 0;
+}
+
+/* Chapter number: skewed, outline on dark, shadowed in a slab. */
+.chapter {
+	display: inline-block;
+	font-family: var(--display);
+	font-weight: 700;
+	font-size: var(--step-3);
+	line-height: 0.8;
+	transform: skewX(-10deg);
+	color: transparent;
+	-webkit-text-stroke: 1.5px var(--signal);
+}
+
+.slab .chapter {
+	color: var(--ink);
+	-webkit-text-stroke: 0;
+	text-shadow: 6px 6px 0 var(--signal);
 }
 
 a {
-	color: var(--color-accent);
+	color: var(--signal);
+	text-underline-offset: 4px;
+}
+
+.slab a:not(.btn) {
+	color: var(--ink);
 }
 
 a:has(button) {
 	text-decoration: none;
 }
 
+strong {
+	font-weight: 700;
+	color: var(--ink);
+}
+
 code {
-	font-family: Inconsolata, ui-monospace, monospace;
+	font-family: var(--body);
 	font-size: 0.9em;
-	background: rgba(255, 255, 255, 0.06);
-	padding: 0.1em 0.35em;
-	border-radius: 5px;
-	border: 1px solid var(--color-border);
+	background: var(--raise);
+	padding: 0.05em 0.35em;
+	border: 1px solid var(--line);
+}
+
+::selection {
+	background: var(--signal);
+	color: var(--on-signal);
 }
 
 :focus-visible {
-	outline: 2px solid var(--color-accent-2);
-	outline-offset: 2px;
+	outline: 2px solid var(--signal);
+	outline-offset: 3px;
+}
+
+.slab :focus-visible {
+	outline-color: var(--ink);
+}
+
+.num {
+	font-variant-numeric: tabular-nums;
+}
+
+/* ── Kicker: ■ SECCIÓN ───────────────────────────────────────────────────── */
+
+.kicker {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6em;
+	font-family: var(--body);
+	font-size: var(--step--2);
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--signal);
+}
+
+.slab .kicker {
+	color: var(--ink);
+}
+
+.kicker::before {
+	content: "";
+	width: 0.6em;
+	height: 0.6em;
+	background: var(--alert);
+	flex: none;
+}
+
+/* ── Exposed grid ────────────────────────────────────────────────────────── */
+
+.grid {
+	display: grid;
+	gap: 1px;
+	background: var(--line);
+	border-block: 1px solid var(--line);
+}
+
+.cell {
+	background: var(--cell);
+	padding: var(--pad);
+	min-width: 0;
+}
+
+/* Section heading: chapter + kicker + title left, context phrase right. */
+.section-head {
+	display: grid;
+	grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+	gap: 1px;
+	background: var(--line);
+	border-block: 1px solid var(--line);
+	margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.section-head > * {
+	background: var(--cell);
+	padding: var(--pad);
+	min-width: 0;
+}
+
+.section-head > div:first-child {
+	display: flex;
+	flex-direction: column;
+	gap: 0.8rem;
+}
+
+.section-head h2 {
+	margin: 0;
+	font-size: var(--step-3);
+}
+
+.section-head p {
+	display: flex;
+	align-items: flex-end;
+	margin: 0;
+	color: var(--muted);
+	font-size: var(--step--1);
 }
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
 
-button {
-	font-family: inherit;
-	font-size: 0.95rem;
+button,
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5em;
+	font-family: var(--body);
+	font-size: var(--step--1);
 	font-weight: 500;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	text-decoration: underline;
+	text-underline-offset: 4px;
 	min-height: 44px;
 	padding: 0.55rem 1.1rem;
-	border-radius: 999px;
-	border: 1px solid var(--color-border-strong);
-	background: rgba(255, 255, 255, 0.04);
-	color: var(--color-text);
+	border-radius: 0;
+	border: 1px solid var(--ink);
+	background: transparent;
+	color: var(--ink);
+	box-shadow: 4px 4px 0 var(--ink);
 	cursor: pointer;
 	transition:
-		transform 0.15s var(--ease-out),
 		background 0.2s,
+		color 0.2s,
 		border-color 0.2s,
-		box-shadow 0.2s;
+		box-shadow 0.15s,
+		translate 0.15s;
 }
 
-button:hover:not(:disabled) {
-	background: rgba(255, 255, 255, 0.1);
+button:hover:not(:disabled),
+.btn:hover {
+	background: var(--raise);
 }
 
-button:active:not(:disabled) {
-	transform: scale(0.97);
+button:active:not(:disabled),
+.btn:active {
+	translate: 3px 3px;
+	box-shadow: 1px 1px 0 var(--ink);
 }
 
 button:disabled {
-	opacity: 0.55;
+	opacity: 0.5;
 	cursor: not-allowed;
 }
 
-/* Main call to action: aurora gradient. */
+/* Primary: signal block with an alert hard shadow, alert on hover. */
 .btn-primary,
 .wallet-primary {
-	background: var(--gradient-aurora);
-	background-size: 200% 100%;
-	border-color: transparent;
-	color: #fff;
-	font-weight: 600;
-	box-shadow: 0 6px 20px rgba(123, 97, 255, 0.35);
+	background: var(--signal);
+	border-color: var(--signal);
+	color: var(--on-signal);
+	font-weight: 700;
+	box-shadow: 4px 4px 0 var(--alert);
 }
 
 .btn-primary:hover:not(:disabled),
 .wallet-primary:hover:not(:disabled) {
-	background: var(--gradient-aurora);
-	background-size: 200% 100%;
-	background-position: 100% 0;
-	box-shadow: var(--glow);
+	background: var(--alert);
+	border-color: var(--alert);
+	color: var(--on-signal);
+}
+
+.btn-primary:active:not(:disabled) {
+	box-shadow: 1px 1px 0 var(--alert);
+}
+
+/* Alert block: the one main action (claim, header action). */
+.btn-alert {
+	background: var(--alert);
+	border-color: var(--alert);
+	color: var(--on-signal);
+	font-weight: 700;
+	box-shadow: 4px 4px 0 var(--ink);
+}
+
+.btn-alert:hover:not(:disabled) {
+	background: var(--signal);
+	border-color: var(--signal);
+	color: var(--on-signal);
+}
+
+/* Dark: used on signal blocks. */
+.btn-dark {
+	background: var(--void);
+	border-color: var(--void);
+	color: var(--signal);
+	box-shadow: 4px 4px 0 var(--alert);
+}
+
+.btn-dark:hover:not(:disabled) {
+	background: var(--alert);
+	border-color: var(--alert);
+	color: var(--on-signal);
 }
 
 .btn-ghost {
 	border-color: transparent;
-	background: transparent;
-	color: var(--color-text-muted);
+	color: var(--muted);
+	box-shadow: none;
 }
 
-/* ── Inputs ──────────────────────────────────────────────────────────────── */
+.btn-ghost:hover:not(:disabled) {
+	color: var(--ink);
+	border-color: var(--line-strong);
+	background: transparent;
+}
+
+.btn-ghost:active:not(:disabled) {
+	box-shadow: none;
+}
+
+/* ── Chips and stickers ──────────────────────────────────────────────────── */
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5em;
+	padding: 0.2em 0.6em;
+	font-family: var(--body);
+	font-size: var(--step--2);
+	font-weight: 500;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	border: 1px solid var(--line);
+	color: var(--ink);
+	white-space: nowrap;
+}
+
+/* Status sticker: tilted, 2px ink border, hard shadow. */
+.sticker {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5em;
+	padding: 0.25em 0.65em;
+	font-family: var(--body);
+	font-size: var(--step--2);
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	background: var(--signal);
+	color: var(--on-signal);
+	border: 2px solid var(--ink);
+	box-shadow: 2px 2px 0 var(--ink);
+	transform: rotate(-4deg);
+}
+
+.dot {
+	width: 0.55em;
+	height: 0.55em;
+	border-radius: 50%;
+	background: currentColor;
+	flex: none;
+}
+
+.dot.pulse {
+	animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+	0%,
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 0.35;
+		transform: scale(0.7);
+	}
+}
+
+/* ── Group heading chevrons: >>>>>> ──────────────────────────────────────── */
+
+.chevrons {
+	flex: 1;
+	min-width: 60px;
+	height: 16px;
+	background:
+		linear-gradient(
+				45deg,
+				transparent 0 40%,
+				var(--alert) 40% 52%,
+				transparent 52%
+			)
+			0 0 / 14px 8px repeat-x,
+		linear-gradient(
+				135deg,
+				transparent 0 40%,
+				var(--alert) 40% 52%,
+				transparent 52%
+			)
+			0 8px / 14px 8px repeat-x;
+	animation: march 1s linear infinite;
+}
+
+@keyframes march {
+	to {
+		background-position:
+			14px 0,
+			14px 8px;
+	}
+}
+
+/* ── Forms ───────────────────────────────────────────────────────────────── */
 
 input,
 textarea,
 select {
-	font-family: inherit;
+	font-family: var(--body);
 	/* 16px avoids the automatic zoom on iOS. */
 	font-size: 1rem;
 	padding: 0.7rem 0.9rem;
-	border-radius: var(--radius);
-	border: 1px solid var(--color-border-strong);
-	background: rgba(11, 8, 32, 0.6);
-	color: var(--color-text);
+	border-radius: 0;
+	border: 1px solid var(--ink);
+	background: var(--cell);
+	color: var(--ink);
 	width: 100%;
 	transition:
-		border-color 0.2s,
-		box-shadow 0.2s;
+		border-color 0.15s,
+		box-shadow 0.15s;
 }
 
 input::placeholder,
 textarea::placeholder {
-	color: rgba(166, 159, 204, 0.6);
+	color: var(--muted);
+	opacity: 0.8;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
 	outline: none;
-	border-color: var(--color-accent);
-	box-shadow: 0 0 0 3px rgba(155, 123, 255, 0.25);
+	border-color: var(--signal);
+	box-shadow: 4px 4px 0 var(--signal);
+}
+
+input[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+	border-color: var(--danger);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+	appearance: none;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	border: 1px solid var(--ink);
+	border-radius: 0;
+	background: var(--cell);
+}
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+	background: var(--signal);
+	box-shadow: inset 0 0 0 3px var(--cell);
 }
 
 input[type="datetime-local"]::-webkit-calendar-picker-indicator {
@@ -188,27 +571,24 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 /* ── Surfaces ────────────────────────────────────────────────────────────── */
 
 .card {
-	background: var(--gradient-card);
-	border: 1px solid var(--color-border);
-	border-radius: var(--radius-lg);
-	padding: 1.25rem;
-	box-shadow: var(--shadow);
+	background: var(--cell);
+	border: 1px solid var(--line);
+	padding: var(--pad);
 }
 
 dialog {
-	background: var(--color-surface);
-	color: var(--color-text);
-	border: 1px solid var(--color-border-strong);
-	border-radius: var(--radius-lg);
+	background: var(--cell);
+	color: var(--ink);
+	border: 2px solid var(--ink);
+	border-radius: 0;
+	box-shadow: 8px 8px 0 var(--signal);
 	padding: 1.5rem;
-	box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
-	max-width: 400px;
+	max-width: 420px;
 	width: calc(100% - 32px);
 }
 
 dialog::backdrop {
-	background: rgba(5, 3, 18, 0.7);
-	backdrop-filter: blur(4px);
+	background: color-mix(in srgb, var(--void) 88%, transparent);
 }
 
 dialog h3 {
@@ -217,7 +597,7 @@ dialog h3 {
 
 dialog p {
 	margin: 0 0 1rem;
-	font-size: 0.875rem;
+	font-size: var(--step--1);
 }
 
 dialog code {
@@ -231,12 +611,7 @@ dialog code {
 
 /* ── Wallet (shared classnames) ──────────────────────────────────────────── */
 
-.connect-account {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
-
+.connect-account,
 .wallet-connected {
 	display: flex;
 	align-items: center;
@@ -244,8 +619,8 @@ dialog code {
 }
 
 .wallet-balance {
-	font-size: 0.875rem;
-	color: var(--color-text-muted);
+	font-size: var(--step--1);
+	color: var(--muted);
 }
 
 .wallet-profile {
@@ -254,15 +629,18 @@ dialog code {
 
 /* ── Motion ──────────────────────────────────────────────────────────────── */
 
-@keyframes fade-up {
-	from {
-		opacity: 0;
-		transform: translateY(12px);
-	}
-	to {
-		opacity: 1;
-		transform: none;
-	}
+/* Scroll reveal (useReveal): opacity + translate only, never clip-path. */
+.reveal {
+	opacity: 0;
+	transform: translateY(28px);
+	transition:
+		opacity 0.7s var(--ease-out),
+		transform 0.7s var(--ease-out);
+}
+
+.reveal.is-in {
+	opacity: 1;
+	transform: none;
 }
 
 @keyframes spin {
@@ -271,13 +649,9 @@ dialog code {
 	}
 }
 
-@keyframes twinkle {
-	0%,
-	100% {
-		opacity: 0.35;
-	}
-	50% {
-		opacity: 1;
+@media (max-width: 767px) {
+	.section-head {
+		grid-template-columns: minmax(0, 1fr);
 	}
 }
 
@@ -289,5 +663,10 @@ dialog code {
 		animation-iteration-count: 1 !important;
 		transition-duration: 0.01ms !important;
 		scroll-behavior: auto !important;
+	}
+
+	.reveal {
+		opacity: 1;
+		transform: none;
 	}
 }

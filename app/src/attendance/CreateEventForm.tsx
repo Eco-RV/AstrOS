@@ -88,14 +88,14 @@ export const CreateEventForm = () => {
 					},
 					{ publicKey },
 				),
-			"Tu evento ya brilla en la blockchain ✦",
+			"Evento creado en la blockchain.",
 		)
 		if (id !== undefined) void navigate(`/evento/${id}`)
 	}
 
 	return (
 		<form className={styles.createLayout} onSubmit={(e) => void submit(e)}>
-			<div className={`card ${styles.form}`}>
+			<div className={`grid ${styles.form}`}>
 				<fieldset className={styles.fieldset}>
 					<legend>1 · Foto de la insignia</legend>
 					<PhotoPicker
@@ -222,12 +222,12 @@ export const CreateEventForm = () => {
 							? "Firmando en tu wallet…"
 							: uploading
 								? "Subiendo la foto…"
-								: "✦ Crear evento"}
+								: "Crear evento"}
 					</button>
 				</div>
 			</div>
 
-			<aside className={`card ${styles.preview}`} aria-label="Vista previa">
+			<aside className={styles.preview} aria-label="Vista previa">
 				<BadgeArt
 					eventId={name.length}
 					name={name || "?"}

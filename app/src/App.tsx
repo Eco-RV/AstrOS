@@ -1,10 +1,11 @@
 import { NavLink, Outlet, Route, Routes, useLocation } from "react-router-dom"
 import styles from "./App.module.css"
+import { Blueprint } from "./brand/Blueprint"
 import { Seal, Wordmark } from "./brand/Logo"
-import { Starfield } from "./brand/Starfield"
 import { AutoFund } from "./components/AutoFund"
 import ConnectAccount from "./components/ConnectAccount"
 import { EntryGate } from "./entry/EntryGate"
+import { useMagnetic } from "./motion/motion"
 import CreateEvent from "./pages/CreateEvent"
 import EventDetail from "./pages/EventDetail"
 import Events from "./pages/Events"
@@ -38,27 +39,36 @@ const navClass = ({ isActive }: { isActive: boolean }) =>
 const AppLayout = () => {
 	// Re-mount the page on navigation so its entrance animation plays.
 	const { pathname } = useLocation()
+	const magnetic = useMagnetic<HTMLAnchorElement>(0.2)
 
 	return (
 		<div className={styles.AppLayout}>
-			<Starfield />
+			<Blueprint />
 			<header className={styles.header}>
-				<NavLink to="/" className={styles.logo} aria-label="AstrOS, inicio">
-					<Seal size={34} className={styles.seal} />
-					<Wordmark height={26} />
-				</NavLink>
-				<nav className={styles.headerNav} aria-label="Principal">
-					<NavLink to="/" end className={navClass}>
-						Eventos
+				<div className={styles.headerInner}>
+					<NavLink to="/" className={styles.logo} aria-label="AstrOS, inicio">
+						<Seal size={30} spin />
+						<Wordmark height={20} />
 					</NavLink>
-					<NavLink to="/crear" className={navClass}>
-						Crear evento
-					</NavLink>
-					<NavLink to="/insignias" className={navClass}>
-						Mi constelación
-					</NavLink>
-				</nav>
-				<ConnectAccount />
+					<nav className={styles.headerNav} aria-label="Principal">
+						<NavLink to="/" end className={navClass}>
+							Eventos
+						</NavLink>
+						<NavLink to="/crear" className={navClass}>
+							Crear evento
+						</NavLink>
+					</nav>
+					<div className={styles.headerEnd}>
+						<NavLink
+							ref={magnetic}
+							to="/insignias"
+							className={`btn btn-alert ${styles.mainAction}`}
+						>
+							→ Mi constelación
+						</NavLink>
+						<ConnectAccount />
+					</div>
+				</div>
 			</header>
 
 			<main className={styles.main} key={pathname}>
@@ -66,7 +76,11 @@ const AppLayout = () => {
 			</main>
 
 			<footer className={styles.footer}>
-				AstrOS · insignias de asistencia en Stellar <span>testnet</span>
+				<span>AstrOS · insignias de asistencia en Stellar</span>
+				<span className="chip">
+					<span className="dot" style={{ color: "var(--signal)" }} />
+					Testnet
+				</span>
 			</footer>
 
 			<AutoFund />
@@ -76,19 +90,13 @@ const AppLayout = () => {
 					<TabIcon d="M4 6h16M4 12h16M4 18h10" />
 					Eventos
 				</NavLink>
-				<NavLink
-					to="/crear"
-					className={({ isActive }) =>
-						`${styles.createTab} ${isActive ? styles.active : ""}`
-					}
-					aria-label="Crear evento"
-				>
-					<span className={styles.createButton}>＋</span>
+				<NavLink to="/crear" className={navClass}>
+					<TabIcon d="M12 5v14M5 12h14" />
 					Crear
 				</NavLink>
 				<NavLink to="/insignias" className={navClass}>
 					<TabIcon d="M5 18l4-7 5 3 5-9M5 18h.01M9 11h.01M14 14h.01M19 5h.01" />
-					Mi constelación
+					Constelación
 				</NavLink>
 			</nav>
 		</div>
@@ -98,13 +106,13 @@ const AppLayout = () => {
 const TabIcon = ({ d }: { d: string }) => (
 	<svg
 		viewBox="0 0 24 24"
-		width="22"
-		height="22"
+		width="20"
+		height="20"
 		fill="none"
 		stroke="currentColor"
 		strokeWidth="2"
-		strokeLinecap="round"
-		strokeLinejoin="round"
+		strokeLinecap="square"
+		strokeLinejoin="miter"
 		aria-hidden
 	>
 		<path d={d} />

@@ -3,13 +3,15 @@ import { Link } from "react-router-dom"
 import styles from "./attendance.module.css"
 import { BadgeArt } from "./BadgeArt"
 
-const SPARKS = Array.from({ length: 14 }, (_, i) => ({
-	angle: (360 / 14) * i,
-	distance: 110 + (i % 3) * 35,
-	delay: (i % 4) * 0.05,
+/** Squares that burst out of the medal: flat geometry, no glow. */
+const BITS = Array.from({ length: 12 }, (_, i) => ({
+	angle: (360 / 12) * i,
+	distance: 120 + (i % 3) * 30,
+	delay: (i % 4) * 0.04,
+	red: i % 3 === 0,
 }))
 
-/** Full-screen celebration after claiming a badge. */
+/** Full-screen celebration after claiming a badge (achievement unlocked). */
 export const Supernova = ({
 	eventId,
 	name,
@@ -40,11 +42,13 @@ export const Supernova = ({
 			aria-labelledby="nova-title"
 		>
 			<div className={styles.novaCard}>
+				<span className={styles.novaKicker}>Logro desbloqueado</span>
 				<div className={styles.novaBadge}>
-					{SPARKS.map((s, i) => (
+					<span className={styles.novaRing} aria-hidden />
+					{BITS.map((s, i) => (
 						<span
 							key={i}
-							className={styles.spark}
+							className={`${styles.spark} ${s.red ? styles.sparkRed : ""}`}
 							style={
 								{
 									"--a": `${s.angle}deg`,
@@ -53,9 +57,7 @@ export const Supernova = ({
 								} as React.CSSProperties
 							}
 							aria-hidden
-						>
-							✦
-						</span>
+						/>
 					))}
 					<BadgeArt
 						eventId={eventId}
@@ -64,19 +66,19 @@ export const Supernova = ({
 						size={170}
 					/>
 				</div>
-				<h2 id="nova-title">¡Es tuya!</h2>
+				<h2 id="nova-title">Es tuya</h2>
 				<p>
 					Insignia <span className={styles.number}>#{number}</span> de «{name}».
 					Ya está registrada en la blockchain a tu nombre.
 				</p>
 				<div className={styles.novaActions}>
-					<Link to="/insignias" className={`${styles.linkButton} btn-primary`}>
+					<Link to="/insignias" className="btn btn-dark">
 						Ver mi constelación
 					</Link>
-					<Link to="/crear" className={styles.linkButton}>
+					<Link to="/crear" className={`btn ${styles.novaLine}`}>
 						Crear mi evento
 					</Link>
-					<button className="btn-ghost" onClick={onClose}>
+					<button className={styles.novaLine} onClick={onClose}>
 						Cerrar
 					</button>
 				</div>
